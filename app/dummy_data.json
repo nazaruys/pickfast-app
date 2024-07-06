@@ -1,0 +1,75 @@
+{
+    "products": [
+      {
+        "id": 1,
+        "title": "Tomato",
+        "priority": "M",
+        "date_buyed": "2024-07-05T15:30:00Z",
+        "store_id": 1
+      },
+      {
+        "id": 2,
+        "title": "Banana",
+        "priority": "H",
+        "date_buyed": null,
+        "store_id": 1
+      },
+      {
+        "id": 3,
+        "title": "Apple",
+        "priority": "L",
+        "date_buyed": "2024-05-15T12:45:00Z",
+        "store_id": null
+      },
+      {
+        "id": 4,
+        "title": "Orange",
+        "priority": "M",
+        "date_buyed": "2024-07-01T09:30:00Z",
+        "store_id": null
+      },
+      {
+        "id": 5,
+        "title": "Grapes",
+        "priority": "H",
+        "date_buyed": null,
+        "store_id": 2
+      },
+      {
+        "id": 6,
+        "title": "Lettuce",
+        "priority": "L",
+        "date_buyed": "2024-06-28T11:00:00Z",
+        "store_id": null
+      },
+      {
+        "id": 7,
+        "title": "Carrot",
+        "priority": "M",
+        "date_buyed": null,
+        "store_id": 2
+      },
+      {
+        "id": 8,
+        "title": "Potato",
+        "priority": "H",
+        "date_buyed": null,
+        "store_id": null
+      }
+    ],
+    "stores": [
+      {
+        "id": 1,
+        "name": "SuperMart"
+      },
+      {
+        "id": 2,
+        "name": "Fresh Market"
+      },
+      {
+        "id": 3,
+        "name": "Green Grocery"
+      }
+    ]
+  }
+  
