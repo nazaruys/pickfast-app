@@ -1,6 +1,6 @@
 import token from "../config/token";
 
-const storesUrl = 'http://10.0.2.2:8000/api/group/groups/NSL7ZW/stores/'
+const storesUrl = 'http://10.0.2.2:8000/api/group/groups/WLMYBR/stores/'
 
 const fetchStores = async (setStores) => {
     try {

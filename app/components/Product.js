@@ -25,8 +25,7 @@ function Product({ product, handlePress, onCheck, stores, productsActive }) {
                 />
                 <AppText
                     style={styles.title}
-                    numberOfLines={2}
-                    ellipsizeMode="tail">
+                    numberOfLines={2}>
                     {product.title}
                 </AppText>
                 {store && <AppText

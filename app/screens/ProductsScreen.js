@@ -1,30 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, RefreshControl, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native-virtualized-view';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import colors from '../config/colors';
-import AppText from '../components/AppText';
-import Screen from '../components/Screen';
 import Product from '../components/Product';
 import DropDownList from '../components/DropDownList';
 import token from '../config/token'
+import AddButton from '../components/AddButton';
+import Container from '../components/Container';
 
 function ProductsScreen() {
+    const navigation = useNavigation();
+
     const [isOpen, setIsOpen] = useState(false)
 
-    const productsUrl = 'http://10.0.2.2:8000/api/group/groups/NSL7ZW/products/'
+    const productsUrl = 'http://10.0.2.2:8000/api/group/groups/WLMYBR/products/'
 
     const [stores, setStores] = useState()
-    const storesUrl = 'http://10.0.2.2:8000/api/group/groups/NSL7ZW/stores/'
+    const storesUrl = 'http://10.0.2.2:8000/api/group/groups/WLMYBR/stores/'
 
     const [productsActive, setProductsActive] = useState()
 
     const [productsBought, setProductsBought] = useState()
 
-
-    useEffect(() => {
-        fetchProducts()
-        fetchStores()
-    }, [])
+    const [refreshing, setRefreshing] = useState(false);
   
     const fetchStores = async () => {
         try {
@@ -49,7 +49,7 @@ function ProductsScreen() {
                   'Authorization': `Bearer ${token}`
             }});
             const data = await response.json();
-            setProductsActive(data.filter(product => product.date_buyed === null));
+            setProductsActive(sortProductsByPriority(data.filter(product => product.date_buyed === null)));
             setProductsBought(data.filter(product => product.date_buyed !== null));
             console.log('Products:', data)
         } catch (error) {
@@ -57,27 +57,72 @@ function ProductsScreen() {
         }
     } 
 
+    const updateProductOnCheck = async (product, bought) => {
+        const url = `http://10.0.2.2:8000/api/group/groups/WLMYBR/products/${product.id}/`;
+        const currentTime = new Date().toISOString();
+
+        try {
+            const response = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ date_buyed: bought ? currentTime : null })
+            });
+            const data = await response.json();
+            console.log('Updated Product:', data);
+        } catch (error) {
+            console.error('Error updating product:', error);
+        }
+    };
+
+    const sortProductsByPriority = (products) => {
+        const priorityOrder = { 'H': 1, 'M': 2, 'L': 3 };
+        return products.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+      };
+
     const productBought = (product) => {
-        console.log('Adding product to the Bought list.')
         setProductsActive(productsActive.filter(item => item.id !== product.id))
         setProductsBought([...productsBought, product])
         console.log('Sending a request to the API!')
+        updateProductOnCheck(product, true)
     }
 
     const productUnBought = (product) => {
-        console.log('Adding product to the Active list.')
         setProductsBought(productsBought.filter(item => item.id !== product.id))
-        setProductsActive([...productsActive, product])
+        setProductsActive(sortProductsByPriority([...productsActive, product]))
         console.log('Sending a request to the API!')
+        updateProductOnCheck(product, false)
     }
 
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        fetchProducts();
+        fetchStores().then(() => setRefreshing(false));
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchProducts();
+            fetchStores();
+        }, [])
+    );
+
     return (
-        <Screen style={styles.container}>
-            <AppText style={styles.text}>Products</AppText>
-            <View style={styles.content}>
+        <Container>
+            <ScrollView 
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={[colors.primary]}
+                        tintColor={colors.primary}
+                    />
+                }
+                >
                 {productsActive &&
                 <FlatList 
-                    style={styles.products}
                     data={productsActive}
                     keyExtractor={item => item.id.toString()}
                     renderItem={({item}) => 
@@ -92,7 +137,6 @@ function ProductsScreen() {
                 />}
                 <DropDownList style={styles.dropDown} title={'BOUGHT'} isOpen={isOpen} setIsOpen={setIsOpen} /> 
                 {isOpen && productsBought && <FlatList
-                    style={styles.products}
                     data={productsBought}
                     keyExtractor={item => item.id.toString()}
                     renderItem={({item}) => 
@@ -101,33 +145,24 @@ function ProductsScreen() {
                             handlePress={() => console.log('Navigating to the details screen.')} 
                             onCheck={() => productUnBought(item)} 
                             stores={stores}
-                            productsActive={productsActive} 
+                            productsActive={productsActive}
                         />
                     }
                 />}
-            </View>
-        </Screen>
+            </ScrollView>
+            <AddButton style={styles.addButton} onPress={() => navigation.navigate('CreateProduct')} />
+        </Container>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: colors.background,
-        flex: 1,
-        paddingHorizontal: '5%'
-    },
-    content: {
-        marginTop: 30
-    },
-    text: {
-        fontSize: 40,
-        fontWeight: '700',
-    },
-    products: {
-        flex: 0,
-    },
     dropDown: {
         marginVertical: 10
+    },
+    addButton: {
+        position: 'absolute',
+        right: 25,
+        bottom: 25,
     }
 })
 
