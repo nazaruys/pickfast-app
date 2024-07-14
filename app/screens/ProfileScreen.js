@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import ProfileCard from '../components/ProfileCard';
 import Container from '../components/Container';
@@ -10,9 +11,11 @@ function ProfileScreen(props) {
     const [userData, setUserData] = useState();
 
 
-    useEffect(() => {
-        fetchUser()
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            fetchUser()
+        }, [])
+    );
 
     const fetchUser = async () => {
         const url = `http://10.0.2.2:8000/api/core/users/3/`;

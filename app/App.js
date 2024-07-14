@@ -11,6 +11,9 @@ import colors from './config/colors';
 import ScreenHeader from './components/ScreenHeader';
 import CreateProductScreen from './screens/CreateProductScreen';
 import CreateStoreScreen from './screens/CreateStoreScreen';
+import GroupScreen from './screens/GroupScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
+import WelcomeScreen from './screens/WelcomeScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -54,27 +57,41 @@ function BottomTabs() {
 
 
 function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Home"
-          component={BottomTabs}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="CreateProduct"
-          component={CreateProductScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="CreateStore"
-          component={CreateStoreScreen}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+    return (
+      <WelcomeScreen /> // The navigation is below.
+    )
 }
+//   return (
+//     <NavigationContainer>
+//       <Stack.Navigator initialRouteName="Home">
+//         <Stack.Screen
+//           name="Home"
+//           component={BottomTabs}
+//           options={{ headerShown: false }}
+//         />
+//         <Stack.Screen
+//           name="CreateProduct"
+//           component={CreateProductScreen}
+//           options={{ headerShown: false }}
+//         />
+//         <Stack.Screen
+//           name="CreateStore"
+//           component={CreateStoreScreen}
+//           options={{ headerShown: false }}
+//         />
+//         <Stack.Screen
+//           name="Group"
+//           component={GroupScreen}
+//           options={{ headerShown: false }}
+//         />
+//         <Stack.Screen
+//           name="EditProfile"
+//           component={EditProfileScreen}
+//           options={{ headerShown: false }}
+//         />
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   );
+// }
 
 export default App;

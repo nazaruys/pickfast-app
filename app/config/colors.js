@@ -7,5 +7,7 @@ export default {
     black: 'black',
     white: 'white',
     background: '#DEFDFF',
-    tiffany: '#00A3FF'
+    backgroundSecondary: '#DEFFF3',
+    tiffany: '#00A3FF',
+    green: '#9DFFDC'
 }

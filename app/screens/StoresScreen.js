@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet } from 'react-native';
 
 import Store from '../components/Store';
 import token from '../config/token';
 import colors from '../config/colors';
 import AddButton from '../components/AddButton';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Container from '../components/Container';
 
 function StoresScreen(props) {
@@ -13,12 +13,8 @@ function StoresScreen(props) {
     const [stores, setStores] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
 
-    useEffect(() => {
-        fetchStores();
-    }, []);
-
+    
     const fetchStores = async () => {
-        setRefreshing(true);
         const url = `http://10.0.2.2:8000/api/group/groups/WLMYBR/stores/`;
         try {
             const response = await fetch(url, {
@@ -31,11 +27,14 @@ function StoresScreen(props) {
             setStores(data);
         } catch (error) {
             console.error('Error fetching the stores:', error);
-        } finally {
-            setRefreshing(false);
         }
     };
-
+    useFocusEffect(
+        useCallback(() => {
+            fetchStores();
+        }, [])
+    );
+    
     return (
         <Container>
             <FlatList

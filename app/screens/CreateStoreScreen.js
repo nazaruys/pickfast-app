@@ -1,15 +1,94 @@
-import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
-function CreateStoreScreen(props) {
+import Screen from '../components/Screen';
+import colors from '../config/colors';
+import AppHeader from '../components/AppHeader';
+import AppTextInput from '../components/AppTextInput';
+import AppButton from '../components/AppButton';
+import token from '../config/token';
+
+const validationSchema = Yup.object().shape({
+    name: Yup.string().required('Name is required'),
+});
+
+function CreateProductScreen() {
     const navigation = useNavigation();
+    const storesUrl = 'http://10.0.2.2:8000/api/group/groups/WLMYBR/stores/';
+
+    const fetchPostStore = async (values) => {
+        try {
+            const response = await fetch(storesUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: values.name
+                })
+            });
+            const data = await response.json();
+            console.log('New Store:', data);
+        } catch (error) {
+            console.error('Error posting store:', error);
+        }
+    };
+
 
     return (
-        <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.goBack()}>
-            <Text>This is the store creation screen!</Text>
-        </TouchableOpacity>
+        <Screen style={styles.container}>
+            <AppHeader title={'Add a Store'} />
+            <View style={styles.content}>
+                <Formik
+                    initialValues={{ name: ''}}
+                    validationSchema={validationSchema}
+                    onSubmit={(values, { resetForm }) => {
+                        fetchPostStore(values);
+                        resetForm();
+                        navigation.goBack();
+                    }}
+                >
+                    {({ handleChange, handleSubmit, values, errors, touched }) => (
+                        <>
+                            <AppTextInput
+                                placeholder='Name'
+                                style={styles.textInput}
+                                maxLength={50}
+                                value={values.name}
+                                onChangeText={handleChange('name')}
+                            />
+                            {touched.name && errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+                            <AppButton title='Add' onPress={handleSubmit} style={styles.submitButton} />
+                        </>
+                    )}
+                </Formik>
+            </View>
+        </Screen>
     );
 }
 
-export default CreateStoreScreen;
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: colors.backgroundSecondary,
+    },
+    content: {
+        paddingHorizontal: '5%',
+        paddingTop: 25
+    },
+    textInput: {
+        marginVertical: 12
+    },
+    submitButton: {
+        marginVertical: 12
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 10
+    }
+});
+
+export default CreateProductScreen;
