@@ -14,6 +14,8 @@ import CreateStoreScreen from './screens/CreateStoreScreen';
 import GroupScreen from './screens/GroupScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import LoginScreen from './screens/LoginScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -58,7 +60,9 @@ function BottomTabs() {
 
 function App() {
     return (
-      <WelcomeScreen /> // The navigation is below.
+      <NavigationContainer>
+        <LoginScreen />
+      </NavigationContainer>
     )
 }
 //   return (

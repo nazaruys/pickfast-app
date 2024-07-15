@@ -8,7 +8,7 @@ function AppHeader({title}) {
     return (
         <View style={styles.header}>
             <BackButton style={styles.icon} />
-            <AppText style={styles.headerTitle}>{title}</AppText>
+            <AppText style={[styles.headerTitle, {transform: [{ translateX: -title.length * 3 }],}]}>{title}</AppText>
         </View>
     );
 }
@@ -25,7 +25,6 @@ const styles = StyleSheet.create({
     headerTitle: {
         position: 'absolute',
         left: '50%',
-        transform: [{ translateX: -50 }],
         fontSize: 24,
         fontWeight: '700',
     }

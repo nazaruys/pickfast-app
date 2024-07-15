@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import {MaterialIcons} from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native';
 
 import AppText from './AppText'
-import { useNavigation } from '@react-navigation/native';
 
 function BackButton({style}) {
     const navigation = useNavigation();
