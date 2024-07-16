@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
 
 import ProfileCard from '../components/ProfileCard';
 import Container from '../components/Container';
@@ -9,16 +11,11 @@ import AppText from '../components/AppText';
 
 function ProfileScreen(props) {
     const [userData, setUserData] = useState();
-
-
-    useFocusEffect(
-        useCallback(() => {
-            fetchUser()
-        }, [])
-    );
-
+    
     const fetchUser = async () => {
-        const url = `http://10.0.2.2:8000/api/core/users/3/`;
+        const access_token = await AsyncStorage.getItem('accessToken');
+        const decodedToken = jwtDecode(access_token);
+        const url = `http://10.0.2.2:8000/api/core/users/${decodedToken.user_id}/`;
         try {
             const response = await fetch(url, {
                 method: 'GET',
@@ -30,9 +27,15 @@ function ProfileScreen(props) {
             setUserData(data);
         } catch (error) {
             console.error('Error fetching the user:', error);
-            setUserData({name: 'N/A', username: 'N/A'});
+            setUserData({name: 'N/A', username: 'N/A', group_id: 'N/A'});
         }
     };
+    
+    useFocusEffect(
+        useCallback(() => {
+            fetchUser()
+        }, [])
+    );
 
     return (
         <Container>

@@ -17,8 +17,8 @@ function WelcomeScreen(props) {
                 <AppText style={styles.logoText}>Welcome!</AppText>
             </View>
             <View style={styles.buttonsContainer}>
-                <AppButton title='Login' style={styles.button} color={colors.green} textColor={colors.black} />
-                <AppButton title='Register' style={styles.button} onPress={() => navigation.navigate('RegisterScreen')} />
+                <AppButton title='Login' style={styles.button} color={colors.green} textColor={colors.black} onPress={() => navigation.navigate('Login')} />
+                <AppButton title='Register' style={styles.button} onPress={() => navigation.navigate('Register')} />
             </View>
         </Screen> 
     );

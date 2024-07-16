@@ -9,7 +9,7 @@ import AppHeader from '../components/AppHeader';
 import AppButton from '../components/AppButton';
 import AppTextInput from '../components/AppTextInput';
 import AppText from '../components/AppText';
-import token from '../config/token';
+import { useNavigation } from '@react-navigation/native';
 
 const passwordValidation = Yup.string()
     .required('Password is required')
@@ -34,6 +34,7 @@ const validationSchema = Yup.object().shape({
 });
 
 function RegisterScreen(props) {
+    const navigation = useNavigation()
     const usersUrl = "http://10.0.2.2:8000/api/core/users/";
 
     const fetchPostUser = async (values) => {
@@ -41,7 +42,6 @@ function RegisterScreen(props) {
             const response = await fetch(usersUrl, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -53,10 +53,23 @@ function RegisterScreen(props) {
             });
             const data = await response.json();
             console.log('New User:', data);
+            return data
         } catch (error) {
             console.error('Error posting user:', error);
         }
     };
+
+    const handleSubmit = async (values) => {
+        try {
+          const data = await fetchPostUser(values);
+          await AsyncStorage.setItem('refreshToken', data.token.refresh);
+          await AsyncStorage.setItem('accessToken', data.token.access);
+          navigation.navigate('Home')
+        } catch (error) {
+          console.error('Error registering and storing tokens', error);
+        }
+      };
+
     return (
         <Screen style={styles.container}>
             <AppHeader title='Register' />
@@ -64,7 +77,7 @@ function RegisterScreen(props) {
                 <Formik
                     initialValues={{ username: '', email: '', name: '', password: '', confirmPassword: '' }}
                     validationSchema={validationSchema}
-                    onSubmit={(values) => fetchPostUser(values)}
+                    onSubmit={(values) => handleSubmit(values)}
                 >
                     {({ handleChange, handleSubmit, values, errors, touched }) => (
                         <>

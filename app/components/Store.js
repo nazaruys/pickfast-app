@@ -6,30 +6,6 @@ import token from '../config/token';
 
 
 function Store({ store, handlePress }) {
-    const [productsCount, setProductsCount] = useState();
-
-
-    useEffect(() => {
-        fetchProductCount(store)
-    }, [store]);
-
-    const fetchProductCount = async (store) => {
-        const url = `http://10.0.2.2:8000/api/group/groups/WLMYBR/stores/${store.id}/products/`;
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            const data = await response.json();
-            setProductsCount(data.length);
-        } catch (error) {
-            console.error('Error fetching the products for the store:', error);
-            setProductsCount('N/A');
-        }
-    };
-
     return (
         <TouchableOpacity onPress={handlePress}>
             <View style={styles.container}>
@@ -41,7 +17,7 @@ function Store({ store, handlePress }) {
                 </AppText>
                 <AppText
                     style={styles.subTitle}>
-                    {productsCount} products
+                    {store.products_count ?? 0} products
                 </AppText>
             </View>
         </TouchableOpacity>

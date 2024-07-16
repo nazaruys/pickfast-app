@@ -1,8 +1,10 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {jwtDecode} from 'jwt-decode';
 
 import ProductsScreen from './screens/ProductsScreen';
 import StoresScreen from './screens/StoresScreen';
@@ -59,43 +61,83 @@ function BottomTabs() {
 
 
 function App() {
-    return (
-      <NavigationContainer>
-        <LoginScreen />
-      </NavigationContainer>
-    )
+  const [initialRoute, setInitialRoute] = useState(null);
+  const checkToken = async () => {
+    try {
+        const refreshToken = await AsyncStorage.getItem('refreshToken');
+        console.log(refreshToken)
+        if (refreshToken) {
+            const decodedToken = jwtDecode(refreshToken);
+            const currentTime = Date.now() / 1000;
+            if (decodedToken.exp > currentTime) {
+            setInitialRoute('Home');
+            } else {
+            setInitialRoute('Welcome');
+            }
+        } else {
+            setInitialRoute('Welcome');
+        }
+        } catch (error) {
+        console.error('Error checking token', error);
+        setInitialRoute('Welcome');
+        }
+  };
+
+  useEffect(() => {
+    checkToken()
+  }, [])
+
+  if (initialRoute === null) {
+    console.log('Returning null...')
+    return null;
+  }
+  console.log(initialRoute)
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName={initialRoute}>
+        <Stack.Screen
+          name="Home"
+          component={BottomTabs}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Welcome"
+          component={WelcomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CreateProduct"
+          component={CreateProductScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CreateStore"
+          component={CreateStoreScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Group"
+          component={GroupScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={RegisterScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }
-//   return (
-//     <NavigationContainer>
-//       <Stack.Navigator initialRouteName="Home">
-//         <Stack.Screen
-//           name="Home"
-//           component={BottomTabs}
-//           options={{ headerShown: false }}
-//         />
-//         <Stack.Screen
-//           name="CreateProduct"
-//           component={CreateProductScreen}
-//           options={{ headerShown: false }}
-//         />
-//         <Stack.Screen
-//           name="CreateStore"
-//           component={CreateStoreScreen}
-//           options={{ headerShown: false }}
-//         />
-//         <Stack.Screen
-//           name="Group"
-//           component={GroupScreen}
-//           options={{ headerShown: false }}
-//         />
-//         <Stack.Screen
-//           name="EditProfile"
-//           component={EditProfileScreen}
-//           options={{ headerShown: false }}
-//         />
-//       </Stack.Navigator>
-//     </NavigationContainer>
-//   );
-// }
 
 export default App;

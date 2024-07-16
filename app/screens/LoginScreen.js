@@ -9,7 +9,8 @@ import AppHeader from '../components/AppHeader';
 import AppButton from '../components/AppButton';
 import AppTextInput from '../components/AppTextInput';
 import AppText from '../components/AppText';
-import token from '../config/token';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 
 const validationSchema = Yup.object().shape({
@@ -18,6 +19,7 @@ const validationSchema = Yup.object().shape({
 });
 
 function LoginScreen(props) {
+    const navigation = useNavigation()
     const loginUrl = "http://10.0.2.2:8000/api/core/login/";
 
     const fetchLoginUser = async (values) => {
@@ -25,7 +27,6 @@ function LoginScreen(props) {
             const response = await fetch(loginUrl, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -35,10 +36,25 @@ function LoginScreen(props) {
             });
             const data = await response.json();
             console.log('Tokens:', data);
+            return data
         } catch (error) {
             console.error('Error login user:', error);
         }
     };
+
+    const handleSubmit = async (values) => {
+        try {
+          const tokens = await fetchLoginUser(values);
+          console.log('Access: ', tokens.access, 'Refresh: ', tokens.refresh)
+          await AsyncStorage.setItem('refreshToken', tokens.refresh);
+          await AsyncStorage.setItem('accessToken', tokens.access);
+          console.log('Async access: ', await AsyncStorage.getItem('accessToken'))
+          navigation.navigate('Home')
+        } catch (error) {
+          console.error('Error logging in and storing tokens', error);
+        }
+      };
+
     return (
         <Screen style={styles.container}>
             <AppHeader title='Login' />
@@ -46,7 +62,7 @@ function LoginScreen(props) {
                 <Formik
                     initialValues={{ username: '', password: '' }}
                     validationSchema={validationSchema}
-                    onSubmit={(values) => fetchLoginUser(values)}
+                    onSubmit={(values) => handleSubmit(values)}
                 >
                     {({ handleChange, handleSubmit, values, errors, touched }) => (
                         <>
@@ -66,7 +82,7 @@ function LoginScreen(props) {
                                 secureTextEntry
                             />
                             {touched.password && errors.password && <AppText style={styles.errorText}>{errors.password}</AppText>}
-                            <AppButton title="Register" style={styles.button} onPress={handleSubmit} />
+                            <AppButton title="Login" style={styles.button} onPress={handleSubmit} />
                         </>
                     )}
                 </Formik>

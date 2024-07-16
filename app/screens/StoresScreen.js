@@ -1,5 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {jwtDecode} from 'jwt-decode';
+
 
 import Store from '../components/Store';
 import token from '../config/token';
@@ -11,11 +14,28 @@ import Container from '../components/Container';
 function StoresScreen(props) {
     const navigation = useNavigation();
     const [stores, setStores] = useState([]);
+    const [userGroup, setUserGroup] = useState();
     const [refreshing, setRefreshing] = useState(false);
 
+    const fetchUserGroup = async () => {
+        try {
+          const access_token = await AsyncStorage.getItem('accessToken');
+          const decodedToken = jwtDecode(access_token);
+          const response = await fetch(`http://10.0.2.2:8000/api/core/users/${decodedToken.user_id}/`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${access_token}`
+            }
+          });
+          const data = await response.json();
+          return data.group_id;
+        } catch (error) {
+          console.error('Error fetching the user group:', error);
+        }
+      };
     
-    const fetchStores = async () => {
-        const url = `http://10.0.2.2:8000/api/group/groups/WLMYBR/stores/`;
+    const fetchStores = async (groupId) => {
+        const url = `http://10.0.2.2:8000/api/group/groups/${groupId}/stores/`;
         try {
             const response = await fetch(url, {
                 method: 'GET',
@@ -31,7 +51,14 @@ function StoresScreen(props) {
     };
     useFocusEffect(
         useCallback(() => {
-            fetchStores();
+            const fetchData = async () => {
+                const groupId = await fetchUserGroup();
+                if (groupId) {
+                    await fetchStores(groupId);
+                    setUserGroup(groupId)
+                }
+              };
+              fetchData();
         }, [])
     );
     
@@ -49,7 +76,7 @@ function StoresScreen(props) {
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
-                        onRefresh={fetchStores}
+                        onRefresh={() => fetchStores(userGroup)}
                         colors={[colors.primary]}
                         tintColor={colors.primary}
                     />
