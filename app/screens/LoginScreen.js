@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 import Screen from '../components/Screen';
 import colors from '../config/colors';
@@ -9,8 +11,7 @@ import AppHeader from '../components/AppHeader';
 import AppButton from '../components/AppButton';
 import AppTextInput from '../components/AppTextInput';
 import AppText from '../components/AppText';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { jwtDecode } from 'jwt-decode';
 
 
 const validationSchema = Yup.object().shape({
@@ -18,7 +19,7 @@ const validationSchema = Yup.object().shape({
     password: Yup.string().required('Password is required'),
 });
 
-function LoginScreen(props) {
+function LoginScreen() {
     const navigation = useNavigation()
     const loginUrl = "http://10.0.2.2:8000/api/core/login/";
 
@@ -42,6 +43,23 @@ function LoginScreen(props) {
         }
     };
 
+    const fetchGroupId = async () => {
+        const access_token = await AsyncStorage.getItem('accessToken');
+        const decodedToken = jwtDecode(access_token);
+        const url = `http://10.0.2.2:8000/api/core/users/${decodedToken.user_id}/`;
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`
+                }
+            });
+            const data = await response.json();
+            return data.group_id
+        } catch (error) {
+            console.error('Error fetching the user:', error);
+        }
+    };
     const handleSubmit = async (values) => {
         try {
           const tokens = await fetchLoginUser(values);
@@ -49,7 +67,17 @@ function LoginScreen(props) {
           await AsyncStorage.setItem('refreshToken', tokens.refresh);
           await AsyncStorage.setItem('accessToken', tokens.access);
           console.log('Async access: ', await AsyncStorage.getItem('accessToken'))
-          navigation.navigate('Home')
+
+          groupId = await fetchGroupId()
+          console.log('Fetched groupId: ', groupId)
+          if (groupId) {
+            await AsyncStorage.setItem('groupId', groupId);
+            console.log('Navigating home because groupId: ', groupId)
+            navigation.navigate('Home')
+          } else {
+            console.log('Navigating enterGroup because groupId: ', groupId)
+            navigation.navigate('EnterGroup')
+          }
         } catch (error) {
           console.error('Error logging in and storing tokens', error);
         }

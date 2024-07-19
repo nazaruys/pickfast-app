@@ -4,13 +4,13 @@ import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Screen from '../components/Screen';
 import colors from '../config/colors';
 import AppHeader from '../components/AppHeader';
 import AppTextInput from '../components/AppTextInput';
 import AppButton from '../components/AppButton';
-import token from '../config/token';
 
 const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -18,16 +18,17 @@ const validationSchema = Yup.object().shape({
 
 function CreateProductScreen() {
     const navigation = useNavigation();
+
     const [stores, setStores] = useState([]);
-    const storesUrl = 'http://10.0.2.2:8000/api/group/groups/WLMYBR/stores/';
-    const productsUrl = 'http://10.0.2.2:8000/api/group/groups/WLMYBR/products/';
 
     const fetchStores = async () => {
         try {
-            const response = await fetch(storesUrl, {
+            const access_token = await AsyncStorage.getItem('accessToken');
+            const groupId = await AsyncStorage.getItem('groupId')
+            const response = await fetch(`http://10.0.2.2:8000/api/group/groups/${groupId}/stores/`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${access_token}`
                 }
             });
             const data = await response.json();
@@ -40,10 +41,12 @@ function CreateProductScreen() {
 
     const fetchPostProduct = async (values) => {
         try {
-            const response = await fetch(productsUrl, {
+            const access_token = await AsyncStorage.getItem('accessToken');
+            const groupId = await AsyncStorage.getItem('groupId')
+            const response = await fetch(`http://10.0.2.2:8000/api/group/groups/${groupId}/products/`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${access_token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -65,15 +68,15 @@ function CreateProductScreen() {
 
     return (
         <Screen style={styles.container}>
-            <AppHeader title={'Add a Product'} />
+            <AppHeader title='Add a Product' />
             <View style={styles.content}>
                 <Formik
                     initialValues={{ title: '', priority: 'M', store_id: null }}
                     validationSchema={validationSchema}
-                    onSubmit={(values, { resetForm }) => {
-                        fetchPostProduct(values);
-                        resetForm();
+                    onSubmit={async (values, { resetForm }) => {
+                        await fetchPostProduct(values);
                         navigation.goBack();
+                        resetForm();
                     }}
                 >
                     {({ handleChange, handleSubmit, values, errors, touched, setFieldValue }) => (

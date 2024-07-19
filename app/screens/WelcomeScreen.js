@@ -1,15 +1,16 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import AppButton from '../components/AppButton';
 import Screen from '../components/Screen';
 import colors from '../config/colors';
 import AppText from '../components/AppText';
-import { useNavigation } from '@react-navigation/native';
 
 
-function WelcomeScreen(props) {
+function WelcomeScreen() {
     const navigation = useNavigation();
+    
     return (
         <Screen style={styles.container}>
             <View style={styles.logoContainer}>

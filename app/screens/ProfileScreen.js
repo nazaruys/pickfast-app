@@ -1,15 +1,16 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { Alert, StyleSheet, View } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
 
 import ProfileCard from '../components/ProfileCard';
 import Container from '../components/Container';
-import token from '../config/token';
 import AppText from '../components/AppText';
 
-function ProfileScreen(props) {
+function ProfileScreen() {
+    const navigation = useNavigation()
+    
     const [userData, setUserData] = useState();
     
     const fetchUser = async () => {
@@ -20,7 +21,7 @@ function ProfileScreen(props) {
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${access_token}`
                 }
             });
             const data = await response.json();
@@ -36,6 +37,23 @@ function ProfileScreen(props) {
             fetchUser()
         }, [])
     );
+    
+    const logOut = async () => {
+        navigation.navigate('Welcome')
+
+        await AsyncStorage.removeItem('accessToken')
+        await AsyncStorage.removeItem('refreshToken')
+        await AsyncStorage.removeItem('groupId')
+    }
+
+    const createLogoutAlert = () =>
+        Alert.alert('Are you sure you want to logout?', 'You will need to login or create a new account', [
+            {
+            text: 'Cancel',
+            style: 'cancel',
+            },
+            {text: 'Log out', onPress: logOut},
+    ]);
 
     return (
         <Container>
@@ -46,9 +64,10 @@ function ProfileScreen(props) {
             </View> 
             }
             {userData &&
-            <ProfileCard icon='group' title='Group' subTitle={userData.group_id} onPress={() => console.log('Navigating to the Group Screen!')} />
+            <ProfileCard icon='group' title='Group' subTitle={userData.group_id} onPress={() => navigation.navigate('Group')} />
             }   
             <ProfileCard icon='account-circle' title='Edit profile' onPress={() => console.log('Navigating to the Edit Profile Screen!')} />
+            <ProfileCard icon='logout' title='Log out' style={styles.logoutCard} onPress={createLogoutAlert} />
         </Container>
     );
 }
@@ -63,6 +82,9 @@ const styles = StyleSheet.create({
     },
     username: {
         fontSize: 20,
+    },
+    logoutCard: {
+        marginTop: 30
     }
 })
 

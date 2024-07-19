@@ -1,49 +1,32 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {jwtDecode} from 'jwt-decode';
-
 
 import Store from '../components/Store';
-import token from '../config/token';
 import colors from '../config/colors';
 import AddButton from '../components/AddButton';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Container from '../components/Container';
 
-function StoresScreen(props) {
+function StoresScreen() {
     const navigation = useNavigation();
-    const [stores, setStores] = useState([]);
-    const [userGroup, setUserGroup] = useState();
-    const [refreshing, setRefreshing] = useState(false);
 
-    const fetchUserGroup = async () => {
-        try {
-          const access_token = await AsyncStorage.getItem('accessToken');
-          const decodedToken = jwtDecode(access_token);
-          const response = await fetch(`http://10.0.2.2:8000/api/core/users/${decodedToken.user_id}/`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${access_token}`
-            }
-          });
-          const data = await response.json();
-          return data.group_id;
-        } catch (error) {
-          console.error('Error fetching the user group:', error);
-        }
-      };
+    const [stores, setStores] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
     
-    const fetchStores = async (groupId) => {
+    const fetchStores = async () => {
+        const groupId = await AsyncStorage.getItem('groupId')
+        const access_token = await AsyncStorage.getItem('accessToken');
         const url = `http://10.0.2.2:8000/api/group/groups/${groupId}/stores/`;
         try {
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${access_token}`
                 }
             });
             const data = await response.json();
+            console.log(data)
             setStores(data);
         } catch (error) {
             console.error('Error fetching the stores:', error);
@@ -52,11 +35,7 @@ function StoresScreen(props) {
     useFocusEffect(
         useCallback(() => {
             const fetchData = async () => {
-                const groupId = await fetchUserGroup();
-                if (groupId) {
-                    await fetchStores(groupId);
-                    setUserGroup(groupId)
-                }
+                await fetchStores();
               };
               fetchData();
         }, [])
@@ -67,20 +46,20 @@ function StoresScreen(props) {
             <FlatList
                 data={stores}
                 keyExtractor={(item) => item.id.toString()}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={() => fetchStores()}
+                        colors={[colors.primary]}
+                        tintColor={colors.primary}
+                    />
+                }
                 renderItem={({ item }) => (
                     <Store 
                         store={item}
                         handlePress={() => console.log('Navigating to the Store Details Screen!')}
                     />
                 )}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={() => fetchStores(userGroup)}
-                        colors={[colors.primary]}
-                        tintColor={colors.primary}
-                    />
-                }
             />
             <AddButton style={styles.addButton} onPress={() => navigation.navigate('CreateStore')} />
         </Container>

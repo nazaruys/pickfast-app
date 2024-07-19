@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import colors from '../config/colors';
 import Checkbox from './Checkbox';
 import AppText from './AppText';
+import Ripple from 'react-native-material-ripple';
 
 function Product({ product, handlePress, onCheck, productsActive }) {
     const [isBought, setIsBought] = useState(!productsActive.some(prod => prod.id === product.id))
@@ -11,7 +12,7 @@ function Product({ product, handlePress, onCheck, productsActive }) {
     const store_name = product?.store_name ?? null;
     
     return (
-        <TouchableWithoutFeedback onPress={handlePress}>
+        <Ripple rippleOpacity={0.2} style={styles.rippleContainer} onPress={handlePress}>
             <View style={[
                 styles.container,
                 { opacity: isBought ? 0.5 : 1 }
@@ -33,7 +34,7 @@ function Product({ product, handlePress, onCheck, productsActive }) {
                     {store_name}
                 </AppText>}
             </View> 
-        </TouchableWithoutFeedback>
+        </Ripple>
     );
 }
 
@@ -44,12 +45,14 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingHorizontal: 25,
         paddingVertical: 17,
-        marginVertical: 10,
         backgroundColor: colors.white,
         borderColor: colors.grey,
         borderWidth: 0.4,
         borderRadius: 5,
         elevation: 3,
+    },
+    rippleContainer: {
+        marginVertical: 10
     },
     checkbox: {
         marginRight: 30

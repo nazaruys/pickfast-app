@@ -4,10 +4,11 @@ import {MaterialIcons} from '@expo/vector-icons'
 
 import colors from '../config/colors';
 import AppText from './AppText';
+import Ripple from 'react-native-material-ripple';
 
-function ProfileCard({ onPress, icon, title, subTitle }) {
+function ProfileCard({ onPress, icon, title, subTitle, style }) {
     return (
-        <TouchableOpacity onPress={onPress}>
+        <Ripple rippleOpacity={0.2} style={[styles.rippleContainer, style]} onPress={onPress}>
             <View style={styles.container}>
                 <MaterialIcons color={colors.dark} name={icon} size={35} style={styles.icon} />
                 <AppText
@@ -18,7 +19,7 @@ function ProfileCard({ onPress, icon, title, subTitle }) {
                 style={styles.subTitle}
                 >{subTitle}</AppText>
             </View>
-        </TouchableOpacity>
+        </Ripple>
     );
 }
 
@@ -28,12 +29,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
         paddingHorizontal: 25,
-        marginVertical: 10,
         backgroundColor: colors.white,
         borderColor: colors.grey,
         borderWidth: 0.4,
         borderRadius: 1,
         elevation: 3,
+    },
+    rippleContainer: {
+        marginVertical: 10,
     },
     title: {
         flex: 1,

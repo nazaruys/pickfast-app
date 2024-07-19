@@ -3,13 +3,13 @@ import { StyleSheet, View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Screen from '../components/Screen';
 import colors from '../config/colors';
 import AppHeader from '../components/AppHeader';
 import AppTextInput from '../components/AppTextInput';
 import AppButton from '../components/AppButton';
-import token from '../config/token';
 
 const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -17,14 +17,15 @@ const validationSchema = Yup.object().shape({
 
 function CreateProductScreen() {
     const navigation = useNavigation();
-    const storesUrl = 'http://10.0.2.2:8000/api/group/groups/WLMYBR/stores/';
 
     const fetchPostStore = async (values) => {
         try {
-            const response = await fetch(storesUrl, {
+            const access_token = await AsyncStorage.getItem('accessToken');
+            const groupId = await AsyncStorage.getItem('groupId')
+            const response = await fetch(`http://10.0.2.2:8000/api/group/groups/${groupId}/stores/`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${access_token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -46,10 +47,10 @@ function CreateProductScreen() {
                 <Formik
                     initialValues={{ name: ''}}
                     validationSchema={validationSchema}
-                    onSubmit={(values, { resetForm }) => {
-                        fetchPostStore(values);
-                        resetForm();
+                    onSubmit={async (values, { resetForm }) => {
+                        await fetchPostStore(values);
                         navigation.goBack();
+                        resetForm();
                     }}
                 >
                     {({ handleChange, handleSubmit, values, errors, touched }) => (

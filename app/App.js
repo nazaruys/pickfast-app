@@ -18,6 +18,7 @@ import EditProfileScreen from './screens/EditProfileScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import LoginScreen from './screens/LoginScreen';
+import EnterGroupScreen from './screens/EnterGroupScreen'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -70,9 +71,14 @@ function App() {
             const decodedToken = jwtDecode(refreshToken);
             const currentTime = Date.now() / 1000;
             if (decodedToken.exp > currentTime) {
-            setInitialRoute('Home');
+				const groupId = await AsyncStorage.getItem('groupId')
+				if (groupId && groupId.length === 6) {
+              		setInitialRoute('Home');
+				} else {
+					setInitialRoute('EnterGroup');
+				}
             } else {
-            setInitialRoute('Welcome');
+              	setInitialRoute('Welcome');
             }
         } else {
             setInitialRoute('Welcome');
@@ -133,6 +139,11 @@ function App() {
         <Stack.Screen
           name="Login"
           component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="EnterGroup"
+          component={EnterGroupScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

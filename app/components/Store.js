@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import Ripple from 'react-native-material-ripple';
 
 import colors from '../config/colors';import AppText from './AppText';
-import token from '../config/token';
-
 
 function Store({ store, handlePress }) {
     return (
-        <TouchableOpacity onPress={handlePress}>
+        <Ripple rippleOpacity={0.2} onPress={handlePress} style={styles.rippleContainer}>
             <View style={styles.container}>
                 <AppText
                     style={styles.name}
@@ -20,7 +19,7 @@ function Store({ store, handlePress }) {
                     {store.products_count ?? 0} products
                 </AppText>
             </View>
-        </TouchableOpacity>
+        </Ripple>
     );
 }
 
@@ -31,12 +30,14 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingHorizontal: 25,
         paddingVertical: 17,
-        marginVertical: 10,
         backgroundColor: colors.white,
         borderColor: colors.grey,
         borderWidth: 0.4,
         borderRadius: 1,
         elevation: 3,
+    },
+    rippleContainer: {
+        marginVertical: 10
     },
     name: {
         flex: 1

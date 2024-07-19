@@ -10,6 +10,7 @@ import AppButton from '../components/AppButton';
 import AppTextInput from '../components/AppTextInput';
 import AppText from '../components/AppText';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const passwordValidation = Yup.string()
     .required('Password is required')
@@ -33,7 +34,7 @@ const validationSchema = Yup.object().shape({
         .required('Confirming password is required')
 });
 
-function RegisterScreen(props) {
+function RegisterScreen() {
     const navigation = useNavigation()
     const usersUrl = "http://10.0.2.2:8000/api/core/users/";
 
@@ -61,10 +62,11 @@ function RegisterScreen(props) {
 
     const handleSubmit = async (values) => {
         try {
-          const data = await fetchPostUser(values);
-          await AsyncStorage.setItem('refreshToken', data.token.refresh);
-          await AsyncStorage.setItem('accessToken', data.token.access);
-          navigation.navigate('Home')
+            const data = await fetchPostUser(values);
+            await AsyncStorage.setItem('refreshToken', data.token.refresh);
+            await AsyncStorage.setItem('accessToken', data.token.access);
+
+            navigation.navigate('EnterGroup')
         } catch (error) {
           console.error('Error registering and storing tokens', error);
         }

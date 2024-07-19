@@ -1,21 +1,25 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import Ripple from 'react-native-material-ripple';
+import { useNavigation } from '@react-navigation/native';
 
-import BackButton from './BackButton';
 import AppText from './AppText';
 
 function AppHeader({title}) {
+    const navigation = useNavigation();
+
     return (
         <View style={styles.header}>
-            <BackButton style={styles.icon} />
-            <AppText style={[styles.headerTitle, {transform: [{ translateX: -title.length * 3 }],}]}>{title}</AppText>
+            <Ripple onPress={() => navigation.goBack()} rippleContainerBorderRadius={5}	>
+                <Ionicons name="arrow-back" size={30} color="black" />
+            </Ripple>
+            <AppText style={[styles.headerTitle]}>{title}</AppText>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    icon: {
-    },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -23,9 +27,8 @@ const styles = StyleSheet.create({
         height: 60,
     },
     headerTitle: {
-        position: 'absolute',
-        left: '50%',
-        fontSize: 24,
+        marginLeft: 25,
+        fontSize: 26,
         fontWeight: '700',
     }
 })
