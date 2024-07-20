@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {MaterialIcons} from '@expo/vector-icons'
+import Ripple from 'react-native-material-ripple';
 
 import colors from '../config/colors';
 import AppText from './AppText';
-import Ripple from 'react-native-material-ripple';
 
 function ProfileCard({ onPress, icon, title, subTitle, style }) {
     return (

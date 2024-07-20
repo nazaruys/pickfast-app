@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Screen from '../components/Screen';
 import colors from '../config/colors';
@@ -10,7 +11,7 @@ import AppButton from '../components/AppButton';
 import AppTextInput from '../components/AppTextInput';
 import AppText from '../components/AppText';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetchPostUser } from '../functions/apiUsers';
 
 const passwordValidation = Yup.string()
     .required('Password is required')
@@ -36,29 +37,6 @@ const validationSchema = Yup.object().shape({
 
 function RegisterScreen() {
     const navigation = useNavigation()
-    const usersUrl = "http://10.0.2.2:8000/api/core/users/";
-
-    const fetchPostUser = async (values) => {
-        try {
-            const response = await fetch(usersUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: values.username,
-                    email: values.email,
-                    name: values.name,
-                    password: values.password
-                })
-            });
-            const data = await response.json();
-            console.log('New User:', data);
-            return data
-        } catch (error) {
-            console.error('Error posting user:', error);
-        }
-    };
 
     const handleSubmit = async (values) => {
         try {
@@ -68,7 +46,7 @@ function RegisterScreen() {
 
             navigation.navigate('EnterGroup')
         } catch (error) {
-          console.error('Error registering and storing tokens', error);
+            throw error
         }
       };
 

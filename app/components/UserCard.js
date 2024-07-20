@@ -4,7 +4,7 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 
 import colors from '../config/colors';import AppText from './AppText';
 
-function UserCard({ user, onPressIcon, iconShown, style }) {
+function UserCard({ user, onPressDeleteIcon, onPressAdminIcon, iconShown, blocked, style }) {
     console.log(user)
     return (
         <View style={[styles.container, style]}>
@@ -18,8 +18,18 @@ function UserCard({ user, onPressIcon, iconShown, style }) {
                 style={styles.subTitle}>
                 Admin
             </AppText>}
+            {iconShown && !blocked && 
+                <TouchableOpacity onPress={onPressAdminIcon}>
+                    <MaterialCommunityIcons 
+                        style={styles.icon}
+                        name='crown' 
+                        size={24} 
+                        color="black" 
+                    />
+                </TouchableOpacity>
+            }
             {iconShown && 
-                <TouchableOpacity onPress={onPressIcon}>
+                <TouchableOpacity onPress={onPressDeleteIcon}>
                     <MaterialCommunityIcons 
                         style={styles.icon}
                         name='close' 

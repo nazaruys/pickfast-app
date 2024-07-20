@@ -4,13 +4,14 @@ import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Screen from '../components/Screen';
 import colors from '../config/colors';
 import AppHeader from '../components/AppHeader';
 import AppTextInput from '../components/AppTextInput';
 import AppButton from '../components/AppButton';
+import { fetchPostProduct } from '../functions/apiProducts';
+import { fetchStores } from '../functions/apiStores';
 
 const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -21,49 +22,17 @@ function CreateProductScreen() {
 
     const [stores, setStores] = useState([]);
 
-    const fetchStores = async () => {
-        try {
-            const access_token = await AsyncStorage.getItem('accessToken');
-            const groupId = await AsyncStorage.getItem('groupId')
-            const response = await fetch(`http://10.0.2.2:8000/api/group/groups/${groupId}/stores/`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${access_token}`
-                }
-            });
-            const data = await response.json();
-            setStores(data);
-            console.log('Stores:', data);
-        } catch (error) {
-            console.error('Error fetching stores:', error);
-        }
-    };
-
-    const fetchPostProduct = async (values) => {
-        try {
-            const access_token = await AsyncStorage.getItem('accessToken');
-            const groupId = await AsyncStorage.getItem('groupId')
-            const response = await fetch(`http://10.0.2.2:8000/api/group/groups/${groupId}/products/`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${access_token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    title: values.title,
-                    priority: values.priority,
-                    store_id: values.store_id
-                })
-            });
-            const data = await response.json();
-            console.log('New Product:', data);
-        } catch (error) {
-            console.error('Error posting product:', error);
-        }
-    };
-
     useEffect(() => {
-        fetchStores();
+        const getStores = async () => {
+            try {
+                const data = await fetchStores();
+                setStores(data);
+            } catch (error) {
+                console.log('Error fetching stores: ', error)
+            }
+        };
+
+        getStores();
     }, []);
 
     return (

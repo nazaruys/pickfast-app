@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import colors from '../config/colors';
 import Checkbox from './Checkbox';
@@ -12,7 +12,7 @@ function Product({ product, handlePress, onCheck, productsActive }) {
     const store_name = product?.store_name ?? null;
     
     return (
-        <Ripple rippleOpacity={0.2} style={styles.rippleContainer} onPress={handlePress}>
+        <TouchableOpacity style={styles.rippleContainer} onPress={handlePress}>
             <View style={[
                 styles.container,
                 { opacity: isBought ? 0.5 : 1 }
@@ -34,7 +34,7 @@ function Product({ product, handlePress, onCheck, productsActive }) {
                     {store_name}
                 </AppText>}
             </View> 
-        </Ripple>
+        </TouchableOpacity>
     );
 }
 

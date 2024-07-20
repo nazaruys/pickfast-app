@@ -1,8 +1,8 @@
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Ripple from 'react-native-material-ripple';
-import { useNavigation } from '@react-navigation/native';
 
 import AppText from './AppText';
 

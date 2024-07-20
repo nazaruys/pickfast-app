@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Store from '../components/Store';
 import colors from '../config/colors';
 import AddButton from '../components/AddButton';
 import Container from '../components/Container';
+import { fetchStores } from '../functions/apiStores';
 
 function StoresScreen() {
     const navigation = useNavigation();
@@ -14,28 +14,11 @@ function StoresScreen() {
     const [stores, setStores] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     
-    const fetchStores = async () => {
-        const groupId = await AsyncStorage.getItem('groupId')
-        const access_token = await AsyncStorage.getItem('accessToken');
-        const url = `http://10.0.2.2:8000/api/group/groups/${groupId}/stores/`;
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${access_token}`
-                }
-            });
-            const data = await response.json();
-            console.log(data)
-            setStores(data);
-        } catch (error) {
-            console.error('Error fetching the stores:', error);
-        }
-    };
     useFocusEffect(
         useCallback(() => {
             const fetchData = async () => {
-                await fetchStores();
+                const data = await fetchStores();
+                setStores(data)
               };
               fetchData();
         }, [])
@@ -49,7 +32,7 @@ function StoresScreen() {
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
-                        onRefresh={() => fetchStores()}
+                        onRefresh={async () => {await fetchStores();}}
                         colors={[colors.primary]}
                         tintColor={colors.primary}
                     />

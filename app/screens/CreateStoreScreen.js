@@ -3,13 +3,13 @@ import { StyleSheet, View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Screen from '../components/Screen';
 import colors from '../config/colors';
 import AppHeader from '../components/AppHeader';
 import AppTextInput from '../components/AppTextInput';
 import AppButton from '../components/AppButton';
+import { fetchPostStore } from '../functions/apiStores';
 
 const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -17,28 +17,6 @@ const validationSchema = Yup.object().shape({
 
 function CreateProductScreen() {
     const navigation = useNavigation();
-
-    const fetchPostStore = async (values) => {
-        try {
-            const access_token = await AsyncStorage.getItem('accessToken');
-            const groupId = await AsyncStorage.getItem('groupId')
-            const response = await fetch(`http://10.0.2.2:8000/api/group/groups/${groupId}/stores/`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${access_token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: values.name
-                })
-            });
-            const data = await response.json();
-            console.log('New Store:', data);
-        } catch (error) {
-            console.error('Error posting store:', error);
-        }
-    };
-
 
     return (
         <Screen style={styles.container}>
