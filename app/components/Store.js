@@ -16,7 +16,7 @@ function Store({ store, handlePress }) {
                 </AppText>
                 <AppText
                     style={styles.subTitle}>
-                    {store.products_count ?? 0} products
+                    {store.products_count ?? 0} {store.products_count === 1 ? "product" : "products"}
                 </AppText>
             </View>
         </Ripple>

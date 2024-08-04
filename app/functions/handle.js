@@ -5,28 +5,35 @@ import {
     fetchLeaveGroup, 
     fetchMakeUserAdmin, 
     fetchMembers, 
-    fetchRemoveUser
+    fetchRemoveUser,
+    fetchUnBlockUser
 } from "./apiGroups"
 import { fetchUser } from "./apiUsers"
+import { resetToEnterGroup } from "../navigationService"
 
-export const handleLeave = async (navigation) => {
+export const handleLeave = async () => {
     await AsyncStorage.removeItem('groupId')
     await fetchLeaveGroup()
-    navigation.navigate('EnterGroup')
+    resetToEnterGroup()
 }
 
-export const handleRemoveUser = async (user, block = false) => {
+export const handleRemoveUser = async (user, block = false, setMembers, membersBlocked, setMembersBlocked) => {
     await fetchRemoveUser(user)
     if (block) {
-        await fetchBlockUser(user)
+        await fetchBlockUser(user, membersBlocked, setMembersBlocked)
     }
-    await fetchMembers()
+    await fetchMembers(setMembers)
 }
 
-export const makeUserAdmin = async (user) => {
+export const handleUnblockMember = async (user, setMembers, membersBlocked, setMembersBlocked) => {
+    await fetchUnBlockUser(user, membersBlocked, setMembersBlocked)
+    await fetchMembers(setMembers)
+}
+
+export const makeUserAdmin = async (user, setMembers) => {
     await fetchMakeUserAdmin(user)
     await fetchUser()
-    await fetchMembers()
+    await fetchMembers(setMembers)
 }
 
 export const changeGroupPrivacy = async (isPrivate, setIsPrivate) => {

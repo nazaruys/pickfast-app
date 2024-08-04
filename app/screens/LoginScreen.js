@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, View } from 'react-native';
 import { Formik } from 'formik';
@@ -13,6 +13,7 @@ import AppTextInput from '../components/AppTextInput';
 import AppText from '../components/AppText';
 import { fetchLoginUser } from '../functions/apiUsers';
 import { fetchGroupId } from '../functions/apiGroups';
+import { createOkAlert } from '../functions/alerts';
 
 
 const validationSchema = Yup.object().shape({
@@ -23,18 +24,28 @@ const validationSchema = Yup.object().shape({
 function LoginScreen() {
     const navigation = useNavigation()
 
+    let previousValues = null;
+
     const handleSubmit = async (values) => {
+        if (previousValues && JSON.stringify(values) === JSON.stringify(previousValues)) {
+            return;
+        }
+        previousValues = values;
         try {
             const tokens = await fetchLoginUser(values);
-            await AsyncStorage.setItem('refreshToken', tokens.refresh);
-            await AsyncStorage.setItem('accessToken', tokens.access);
+            if (tokens) {
+                await AsyncStorage.setItem('refreshToken', tokens.refresh);
+                await AsyncStorage.setItem('accessToken', tokens.access);
 
-            groupId = await fetchGroupId()
-            if (groupId) {
-                await AsyncStorage.setItem('groupId', groupId);
-                navigation.navigate('Home')
+                groupId = await fetchGroupId()
+                if (groupId) {
+                    await AsyncStorage.setItem('groupId', groupId);
+                    navigation.navigate('Home')
+                } else {
+                    navigation.navigate('EnterGroup')
+                }
             } else {
-                navigation.navigate('EnterGroup')
+                createOkAlert('Invalid credentials')
             }
         } catch (error) {
             throw error

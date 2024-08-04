@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 import Screen from '../components/Screen';
 import colors from '../config/colors';
@@ -10,8 +11,8 @@ import AppHeader from '../components/AppHeader';
 import AppButton from '../components/AppButton';
 import AppTextInput from '../components/AppTextInput';
 import AppText from '../components/AppText';
-import { useNavigation } from '@react-navigation/native';
 import { fetchPostUser } from '../functions/apiUsers';
+import { createOkAlert } from '../functions/alerts';
 
 const passwordValidation = Yup.string()
     .required('Password is required')
@@ -41,10 +42,18 @@ function RegisterScreen() {
     const handleSubmit = async (values) => {
         try {
             const data = await fetchPostUser(values);
-            await AsyncStorage.setItem('refreshToken', data.token.refresh);
-            await AsyncStorage.setItem('accessToken', data.token.access);
+            if (data.token) {
+                await AsyncStorage.setItem('refreshToken', data.token.refresh);
+                await AsyncStorage.setItem('accessToken', data.token.access);
 
-            navigation.navigate('EnterGroup')
+                navigation.navigate('EnterGroup')
+            } else {
+                if (data.detail) {
+                    createOkAlert(data.detail)
+                } else {
+                    createOkAlert('Something went wrong, try again later')
+                }
+            }
         } catch (error) {
             throw error
         }

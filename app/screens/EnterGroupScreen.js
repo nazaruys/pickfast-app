@@ -14,7 +14,9 @@ import colors from '../config/colors';
 import AppText from '../components/AppText';
 import AppButton from '../components/AppButton';
 import { fetchPatchUserGroupCode } from '../functions/apiUsers';
-import { createLogoutAlert } from '../functions/alerts';
+import { createLogoutAlert, createOkAlert } from '../functions/alerts';
+import { fetchPostGroup } from '../functions/apiGroups';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function EnterGroupScreen() {
     const navigation = useNavigation()
@@ -31,11 +33,30 @@ function EnterGroupScreen() {
     const handleCodeInput = async (input) => {
       setCode(input.toUpperCase());
       if (input.length === CELL_COUNT) {
-        await fetchPatchUserGroupCode(input.toUpperCase())
+        const response = await fetchPatchUserGroupCode(input.toUpperCase())
+        if (response) {
+			setCode('')
+			let message;
+			if (response.status === 400) {
+				message = 'Group does not exist'
+			} else if (response.status === 403) {
+				message = 'You are blocked from this group'
+			} else {
+				message = 'Unknown error'
+			}
+			createOkAlert(message)
+			return
+        }
         navigation.navigate('Home')
         setCode('')
       }
     };
+
+    const createGroup = async () => {
+        data = await fetchPostGroup()
+        await AsyncStorage.setItem('groupId', data.code)
+		    navigation.navigate('Home')
+    }
     
     return (
       <Screen style={styles.container}>
@@ -64,7 +85,7 @@ function EnterGroupScreen() {
         </View>
         <View style={styles.buttonContainer}>
           <AppText style={styles.buttonText}>Don't have a group?</AppText>
-          <AppButton title="Create a new Group" onPress={() => console.log('Creating a group.')} />
+          <AppButton title="Create a new Group" onPress={createGroup} />
         </View>
       </Screen>
   );
@@ -123,9 +144,6 @@ const styles = StyleSheet.create({
     top: 70,
     left: '5%'
   },
-  icon: {
-
-  }
 });
 
 export default EnterGroupScreen;

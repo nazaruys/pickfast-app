@@ -5,20 +5,19 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import colors from '../config/colors';import AppText from './AppText';
 
 function UserCard({ user, onPressDeleteIcon, onPressAdminIcon, iconShown, blocked, style }) {
-    console.log(user)
     return (
-        <View style={[styles.container, style]}>
+        <View style={[styles.container, style, {opacity: blocked ? 0.5 : 1}]}>
             <AppText
                 style={styles.name}
                 numberOfLines={1}
                 >
                 {user.name}
             </AppText>
-            {user.admin_of && <AppText
+            {!blocked && user.admin_of && <AppText
                 style={styles.subTitle}>
                 Admin
             </AppText>}
-            {iconShown && !blocked && 
+            {!blocked && iconShown && 
                 <TouchableOpacity onPress={onPressAdminIcon}>
                     <MaterialCommunityIcons 
                         style={styles.icon}

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import Ripple from 'react-native-material-ripple';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 
 import AppHeader from '../components/AppHeader';
@@ -9,16 +9,25 @@ import Screen from '../components/Screen';
 import colors from '../config/colors';
 import UserCard from '../components/UserCard';
 import AppText from '../components/AppText';
-import { fetchUser } from '../functions/apiUsers';
-import { fetchGroupPrivacy, fetchMembers } from '../functions/apiGroups';
-import { createChangeGroupPrivacyAlert, createGiveAdminAlert, createNotAdminAlert, createRemoveUserAlert, createExitGroupAlert } from '../functions/alerts';
+import { fetchUser, fetchUserById } from '../functions/apiUsers';
+import { fetchGroupPrivacy, fetchMembers, fetchMembersBlocked } from '../functions/apiGroups';
+import { 
+    createChangeGroupPrivacyAlert, 
+    createGiveAdminAlert, 
+    createNotAdminAlert, 
+    createRemoveUserAlert, 
+    createExitGroupAlert, 
+    createUnBlockMemberAlert,
+    createOkAlert
+} from '../functions/alerts';
+import DropDownList from '../components/DropDownList';
 
 function GroupScreen() {
-    const navigation = useNavigation()
-
     const [isPrivate, setIsPrivate] = useState(false)
     const [members, setMembers] = useState([]);
+    const [membersBlocked, setMembersBlocked] = useState([]);
     const [userData, setUserData] = useState();
+    const [dropDownOpen, setDropDownOpen] = useState();
 
     useFocusEffect(
         useCallback(() => {
@@ -26,6 +35,13 @@ function GroupScreen() {
             await fetchUser(setUserData)
             await fetchMembers(setMembers)
             await fetchGroupPrivacy(setIsPrivate)
+            const newMembersBlocked = await fetchMembersBlocked()
+            for (const memberId of newMembersBlocked) {
+                const member = await fetchUserById(memberId)
+                if (!membersBlocked.includes(member)) {
+                    setMembersBlocked([...membersBlocked, member]);
+                }
+            }
           };
           fetchData();
         }, [])
@@ -44,7 +60,7 @@ function GroupScreen() {
                                     <Ripple onPress={userData.admin_of ? () => createChangeGroupPrivacyAlert(isPrivate, setIsPrivate) : createNotAdminAlert} style={styles.icon}>
                                         <MaterialCommunityIcons name={isPrivate ? 'lock' : 'lock-open'} size={40} />
                                     </Ripple>
-                                    <Ripple onPress={() => createExitGroupAlert(navigation)} style={styles.icon}>
+                                    <Ripple onPress={createExitGroupAlert} style={styles.icon}>
                                         <MaterialCommunityIcons name='logout' size={40} />
                                     </Ripple>
                                 </View>
@@ -60,10 +76,28 @@ function GroupScreen() {
                             user={item}
                             iconShown={userData.admin_of ? true : false}
                             blocked={false}
-                            onPressDeleteIcon={() => createRemoveUserAlert(item)}
-                            onPressAdminIcon={() => createGiveAdminAlert(item)}
+                            onPressDeleteIcon={() => createRemoveUserAlert(item, setMembers, membersBlocked, setMembersBlocked)}
+                            onPressAdminIcon={() => createGiveAdminAlert(item, setMembers)}
                         />
                     )}
+                    ListFooterComponent={
+                        <View>
+                            <DropDownList title='BLOCKED' style={styles.blockedListDropdown} isOpen={dropDownOpen} setIsOpen={setDropDownOpen} />
+                            {dropDownOpen &&
+                            <FlatList
+                                style={styles.membersBlockedList}
+                                data={membersBlocked}
+                                keyExtractor={(item) => item.id.toString()}
+                                renderItem={({ item }) => (
+                                    <UserCard 
+                                        user={item}
+                                        iconShown={true}
+                                        blocked={true}
+                                        onPressDeleteIcon={userData.admin_of ? () => createUnBlockMemberAlert(item, setMembers, membersBlocked, setMembersBlocked) : () => createOkAlert('Only admin can unblock users')}/>
+                                )}
+                            />}
+                        </View>
+                    }
                 />
             }
         </Screen>
@@ -92,13 +126,18 @@ const styles = StyleSheet.create({
     },
     membersList: {
         paddingHorizontal: '5%',
-        bottom: 10,
+    },
+    membersBlockedList: {
+        marginTop: 12
     },
     iconsContainer: {
         flexDirection: 'row'
     },
     icon: {
         marginHorizontal: 5,
+    },
+    blockedListDropdown: {
+        
     }
 })
 

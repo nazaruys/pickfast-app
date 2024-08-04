@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode';
 
 import ProductsScreen from './screens/ProductsScreen';
@@ -19,6 +18,8 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import LoginScreen from './screens/LoginScreen';
 import EnterGroupScreen from './screens/EnterGroupScreen'
+import { navigationRef } from './navigationService';
+import { getGroupId, getRefreshToken } from './functions/getAsyncStorage';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -27,7 +28,7 @@ function BottomTabs() {
 return (
   <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
+        tabBarIcon: ({ color }) => {
           let iconName;
           let iconSize = 35
 
@@ -64,21 +65,21 @@ return (
 function App() {
 const [initialRoute, setInitialRoute] = useState(null);
 const checkToken = async () => {
-  try {
-      const refreshToken = await AsyncStorage.getItem('refreshToken');
-      if (refreshToken) {
-          const decodedToken = jwtDecode(refreshToken);
-          const currentTime = Date.now() / 1000;
-          if (decodedToken.exp > currentTime) {
-      const groupId = await AsyncStorage.getItem('groupId')
-      if (groupId && groupId.length === 6) {
-                setInitialRoute('Home');
-      } else {
-        setInitialRoute('EnterGroup');
-      }
-          } else {
-              setInitialRoute('Welcome');
-          }
+  	try {
+      	const refreshToken = await getRefreshToken()
+      	if (refreshToken) {
+			const decodedToken = jwtDecode(refreshToken);
+			const currentTime = Date.now() / 1000;
+			if (decodedToken.exp > currentTime) {
+				const groupId = await getGroupId()
+				if (groupId && groupId.length === 6) {
+					setInitialRoute('Home');
+				} else {
+					setInitialRoute('EnterGroup');
+				}
+			} else {
+				setInitialRoute('Welcome');
+			}
       } else {
           setInitialRoute('Welcome');
       }
@@ -96,7 +97,7 @@ if (initialRoute === null) {
   return null;
 }
 return (
-  <NavigationContainer>
+  <NavigationContainer ref={navigationRef}>
     <Stack.Navigator initialRouteName={initialRoute}>
       <Stack.Screen
         name="Home"
