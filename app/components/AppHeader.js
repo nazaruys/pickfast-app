@@ -6,12 +6,16 @@ import Ripple from 'react-native-material-ripple';
 
 import AppText from './AppText';
 
-function AppHeader({title}) {
+function AppHeader({title, onBackPress}) {
     const navigation = useNavigation();
+
+    const handleBackPress = () => {
+        onBackPress ? onBackPress() : navigation.goBack()
+    }
 
     return (
         <View style={styles.header}>
-            <Ripple onPress={() => navigation.goBack()} rippleContainerBorderRadius={5}	>
+            <Ripple onPress={handleBackPress} rippleContainerBorderRadius={5}	>
                 <Ionicons name="arrow-back" size={30} color="black" />
             </Ripple>
             <AppText style={[styles.headerTitle]}>{title}</AppText>

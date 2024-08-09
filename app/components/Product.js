@@ -4,15 +4,16 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import colors from '../config/colors';
 import Checkbox from './Checkbox';
 import AppText from './AppText';
-import Ripple from 'react-native-material-ripple';
+import { useNavigation } from '@react-navigation/native';
 
-function Product({ product, handlePress, onCheck, productsActive }) {
+function Product({ product, onCheck, productsActive }) {
+    const navigation = useNavigation()
     const [isBought, setIsBought] = useState(!productsActive.some(prod => prod.id === product.id))
 
     const store_name = product?.store_name ?? null;
     
     return (
-        <TouchableOpacity style={styles.rippleContainer} onPress={handlePress}>
+        <TouchableOpacity style={styles.rippleContainer} onPress={() => navigation.navigate('ProductDetails', { productId: product.id })}>
             <View style={[
                 styles.container,
                 { opacity: isBought ? 0.5 : 1 }

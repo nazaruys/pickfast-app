@@ -5,6 +5,7 @@ import fetchRefreshToken from './fetchRefreshToken';
 import { getAccessToken } from './getAsyncStorage';
 
 export const fetchUser = async (setUserData) => {
+    // Gets and sets the data for current user
     try {
         const access_token = await getAccessToken()
         const decodedToken = jwtDecode(access_token);
@@ -90,6 +91,38 @@ export const fetchPatchUserGroupCode = async (group_code) => {
             console.log(response.status)
             return response
         }
+    } catch (error) {
+        throw error
+    }
+};
+export const fetchPatchUser = async (values) => {
+    try {
+        const access_token = await getAccessToken()
+        const fetchData = async (token = access_token) => {
+            return await fetch(
+                `http://10.0.2.2:8000/api/core/users/${jwtDecode(access_token).user_id}/`, 
+                {method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: values.username,
+                    name: values.name
+                    })}
+                )
+        }
+        const response = await fetchData()
+        if (response.status === 401) {
+            const access = await fetchRefreshToken()
+            if (access) {
+                const response = await fetchData(access)
+                return response
+            }
+            return response
+        }
+        return response
+
     } catch (error) {
         throw error
     }

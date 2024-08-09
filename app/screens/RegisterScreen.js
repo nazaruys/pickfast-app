@@ -48,10 +48,15 @@ function RegisterScreen() {
 
                 navigation.navigate('EnterGroup')
             } else {
-                if (data.detail) {
-                    createOkAlert(data.detail)
+                if (data.username) {
+                    createOkAlert(data.username[0])
+                } else if (data.email) {
+                    createOkAlert(data.email[0])
+                } else if (data.password) {
+                    createOkAlert(data.password[0])
                 } else {
-                    createOkAlert('Something went wrong, try again later')
+                    console.log(data)
+                    createOkAlert('Something went wrong')
                 }
             }
         } catch (error) {

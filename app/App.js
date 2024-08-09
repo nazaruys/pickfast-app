@@ -20,6 +20,7 @@ import LoginScreen from './screens/LoginScreen';
 import EnterGroupScreen from './screens/EnterGroupScreen'
 import { navigationRef } from './navigationService';
 import { getGroupId, getRefreshToken } from './functions/getAsyncStorage';
+import ProductDetailsScreen from './screens/ProductDetailsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -112,6 +113,11 @@ return (
       <Stack.Screen
         name="CreateProduct"
         component={CreateProductScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ProductDetails"
+        component={ProductDetailsScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

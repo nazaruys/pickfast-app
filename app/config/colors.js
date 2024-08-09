@@ -9,5 +9,8 @@ export default {
     background: '#DEFDFF',
     backgroundSecondary: '#DEFFF3',
     tiffany: '#00A3FF',
-    green: '#9DFFDC'
+    green: '#9DFFDC',
+    yellow: '#F9FFE0',
+    lightGreen: '#E1FFDE',
+    red: '#f51146'
 }

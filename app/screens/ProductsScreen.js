@@ -39,12 +39,16 @@ function ProductsScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
-        const data = await fetchProducts();
-        setProductsActive(sortProductsByPriority(data.filter(product => !product.date_buyed)));
-        setProductsBought(data.filter(product => product.date_buyed));
-      };
-      fetchData();
+        const fetchData = async () => {
+            const data = await fetchProducts();
+
+            const newProductsActive = data.filter(product => !product.date_buyed);
+            const newProductsBought = data.filter(product => product.date_buyed);
+
+            setProductsActive(sortProductsByPriority(newProductsActive));
+            setProductsBought(newProductsBought)
+        };
+        fetchData();
     }, [])
   );
 
@@ -52,11 +56,10 @@ function ProductsScreen() {
     <View>
       {productsActive.map((item) => (
         <Product
-          key={item.id.toString()}
-          product={item}
-          handlePress={() => console.log('Navigating to the details screen.')}
-          onCheck={() => productBought(item)}
-          productsActive={productsActive}
+			key={item.id.toString()}
+			product={item}
+			onCheck={() => productBought(item)}
+			productsActive={productsActive}
         />
       ))}
     </View>

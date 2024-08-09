@@ -20,6 +20,7 @@ export default fetchRefreshToken = async () => {
         if (response.status === 200) {
             const data = await response.json()
             await AsyncStorage.setItem('accessToken', data.access)
+            console.log('Refreshed succesfully!')
             return data.access 
         } else {
             logOut()
