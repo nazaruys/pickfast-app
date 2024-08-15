@@ -1,8 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import fetchRefreshToken from './fetchRefreshToken';
 import { getAccessToken } from './getAsyncStorage';
+
+API_URL = process.env.EXPO_PUBLIC_API_URL
 
 export const fetchUser = async (setUserData) => {
     // Gets and sets the data for current user
@@ -10,7 +12,7 @@ export const fetchUser = async (setUserData) => {
         const access_token = await getAccessToken()
         const decodedToken = jwtDecode(access_token);
         const fetchData = async (token = access_token) => { 
-            return await fetch(`http://10.0.2.2:8000/api/core/users/${decodedToken.user_id}/`, {
+            return await fetch(`${API_URL}core/users/${decodedToken.user_id}/`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -31,7 +33,7 @@ export const fetchUser = async (setUserData) => {
             console.log(await response.json())
         }
     } catch (error) {
-        throw error
+        throw(error)
     }
 };
 
@@ -39,7 +41,7 @@ export const fetchUserById = async (id) => {
     try {
         const access_token = await getAccessToken()
         const fetchData = async (token = access_token) => { 
-            return await fetch(`http://10.0.2.2:8000/api/core/users/${id}/`, {
+            return await fetch(`${API_URL}core/users/${id}/`, {
             method: 'GET', 
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -60,7 +62,7 @@ export const fetchUserById = async (id) => {
             console.log(await response.json())
         }
     } catch (error) {
-        throw error
+        throw(error)
     }
 };
 
@@ -68,7 +70,7 @@ export const fetchPatchUserGroupCode = async (group_code) => {
     try {
         const access_token = await getAccessToken()
         const fetchData = async (token = access_token) => {
-            return await fetch(`http://10.0.2.2:8000/api/core/users/${jwtDecode(access_token).user_id}/`, {
+            return await fetch(`${API_URL}core/users/${jwtDecode(access_token).user_id}/`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -83,16 +85,16 @@ export const fetchPatchUserGroupCode = async (group_code) => {
             const access = await fetchRefreshToken()
             if (access) {
                 await fetchData(access)
-                AsyncStorage.setItem('groupId', group_code)
+                await AsyncStorage.setItem('groupId', group_code)
             }
         } else if (response.status === 200) {
-            AsyncStorage.setItem('groupId', group_code)
+            await AsyncStorage.setItem('groupId', group_code)
         } else {
             console.log(response.status)
             return response
         }
     } catch (error) {
-        throw error
+        throw(error)
     }
 };
 export const fetchPatchUser = async (values) => {
@@ -100,7 +102,7 @@ export const fetchPatchUser = async (values) => {
         const access_token = await getAccessToken()
         const fetchData = async (token = access_token) => {
             return await fetch(
-                `http://10.0.2.2:8000/api/core/users/${jwtDecode(access_token).user_id}/`, 
+                `${API_URL}core/users/${jwtDecode(access_token).user_id}/`, 
                 {method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -124,14 +126,17 @@ export const fetchPatchUser = async (values) => {
         return response
 
     } catch (error) {
-        throw error
+        throw(error)
     }
 };
+
+
+// 2 individuals
 
 export const fetchLoginUser = async (values) => {
     try {
         const fetchData = async () => {
-            return await fetch("http://10.0.2.2:8000/api/core/login/", {
+            return await fetch(`${API_URL}core/login/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -149,14 +154,14 @@ export const fetchLoginUser = async (values) => {
             return null
         }
     } catch (error) {
-        throw error
+        throw(error)
     }
 };
 
 export const fetchPostUser = async (values) => {
     try {
         const fetchData = async () => {
-            return await fetch("http://10.0.2.2:8000/api/core/users/", {
+            return await fetch(`${API_URL}core/users/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -172,7 +177,7 @@ export const fetchPostUser = async (values) => {
         const data = await response.json();
         return data
     } catch (error) {
-        throw error
+        throw(error)
     }
 };
 

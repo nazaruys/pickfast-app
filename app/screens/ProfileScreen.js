@@ -13,12 +13,13 @@ function ProfileScreen() {
     
     const [userData, setUserData] = useState();
     
-    useFocusEffect(() => {
-        const fetchData = async () => {
-            await fetchUser(setUserData)
-        };
-        fetchData()
-        }
+    useFocusEffect(
+        useCallback(() => {
+            const fetchData = async () => {
+                await fetchUser(setUserData)
+            };
+            fetchData()   
+        }, [])
     );
 
     return (

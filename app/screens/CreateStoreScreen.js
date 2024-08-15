@@ -9,7 +9,7 @@ import colors from '../config/colors';
 import AppHeader from '../components/AppHeader';
 import AppTextInput from '../components/AppTextInput';
 import AppButton from '../components/AppButton';
-import { fetchPostStore } from '../functions/apiStores';
+import baseFetch from '../functions/baseFetch';
 
 const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -26,8 +26,8 @@ function CreateProductScreen() {
                     initialValues={{ name: ''}}
                     validationSchema={validationSchema}
                     onSubmit={async (values, { resetForm }) => {
-                        await fetchPostStore(values);
-                        navigation.goBack();
+                        const data = await baseFetch(`group/groups/groupId/stores/`, 'POST', {name: values.name})
+                        data && navigation.goBack();
                         resetForm();
                     }}
                 >

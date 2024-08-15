@@ -3,10 +3,11 @@ import logOut from "./logOut";
 import { 
     changeGroupPrivacy, 
     handleLeave, 
-    handleRemoveUser, 
-    handleUnblockMember, 
-    makeUserAdmin 
+    handleRemoveUser
 } from "./handle";
+import baseFetch from "./baseFetch";
+import { fetchMakeUserAdmin, fetchUnBlockUser } from "./apiGroups";
+import { fetchUser } from "./apiUsers";
 
 export const createLogoutAlert = () =>
     Alert.alert('Are you sure you want to logout?', 'You will need to login or create a new account', [
@@ -26,15 +27,21 @@ export const createExitGroupAlert = () =>
         {text: 'Leave', onPress: handleLeave},
 ], {cancelable: true});
 
-export const createRemoveUserAlert = (user, setMembers, membersBlocked, setMembersBlocked) =>
+export const createRemoveUserAlert = (user, setMembers, membersBlocked, setMembersBlocked) => {
+    const removeUser = async (block = false) => {
+        await handleRemoveUser(user, block, membersBlocked, setMembersBlocked)
+        const members = await baseFetch('group/groups/groupId/members/', 'GET')
+        members && setMembers(members)
+    }
     Alert.alert('Confirm', `Are you sure you want to remove ${user.name} from the group?`, [
         {
         text: 'Cancel',
         style: 'cancel',
         },
-        {text: 'Remove and block', onPress: () => handleRemoveUser(user, block=true, setMembers, membersBlocked, setMembersBlocked)},
-        {text: 'Remove', onPress: () => handleRemoveUser(user, block=false, setMembers)},
-], {cancelable: true});
+        {text: 'Remove and block', onPress: () => removeUser(block=true)},
+        {text: 'Remove', onPress: () => removeUser(block=false)},
+    ], {cancelable: true})
+}
 
 export const createChangeGroupPrivacyAlert = (isPrivate, setIsPrivate) =>
     Alert.alert(`Are you sure you want to make this group ${isPrivate ? 'Public' : 'Private'}?`, 
@@ -55,30 +62,47 @@ export const createNotAdminAlert = () =>
         },
 ], {cancelable: true});
 
-export const createGiveAdminAlert = (user) =>
+export const createGiveAdminAlert = (user, setMembers, setUserData) => {
+    const giveAdminAndRefresh = async () => {
+        await fetchMakeUserAdmin(user)
+
+        await fetchUser(setUserData)
+        const members = await baseFetch('group/groups/groupId/members/', 'GET')
+        members && setMembers(members)
+    }
     Alert.alert(`Are you sure you want to make ${user.name} an admin?`, 
             `You will lose your admin abilities`, [
         {
         text: 'Cancel',
         style: 'cancel',
         },
-        {text: 'Confirm', onPress: () => makeUserAdmin(user, setMembers)},
-], {cancelable: true});
+        {text: 'Confirm', onPress: giveAdminAndRefresh},
+    ], {cancelable: true})
+}
 
-export const createOkAlert = (message) =>
+export const createOkAlert = (message) => {
+    if (typeof message !== 'string' || !message.trim()) {
+        message = 'An unexpected error occurred';
+    }
+
     Alert.alert(message, '', [
-        {
-        text: 'OK',
-        },
-  ], {cancelable: true});
-
+        { text: 'OK' },
+    ], { cancelable: true });
+};
   
-  export const createUnBlockMemberAlert = (user, setMembers, membersBlocked, setMembersBlocked) =>
+  export const createUnBlockMemberAlert = (user, setMembers, membersBlocked, setMembersBlocked) => {
+    const unblockMemberAndRefresh = async () => {
+        await fetchUnBlockUser(user, membersBlocked, setMembersBlocked)
+
+        const members = await baseFetch('group/groups/groupId/members/', 'GET')
+        members && setMembers(members)
+    }
     Alert.alert(`Are you sure you want to unblock ${user.name}?`, 
             `${user.name} is then able to join this group`, [
         {
         text: 'Cancel',
         style: 'cancel',
         },
-        {text: 'Confirm', onPress: () => handleUnblockMember(user, setMembers, membersBlocked, setMembersBlocked)},
-], {cancelable: true});
+        {text: 'Confirm', onPress: unblockMemberAndRefresh},
+    ], {cancelable: true})
+}

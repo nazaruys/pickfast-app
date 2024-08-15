@@ -11,7 +11,7 @@ import AppHeader from '../components/AppHeader';
 import AppTextInput from '../components/AppTextInput';
 import AppButton from '../components/AppButton';
 import { fetchPostProduct } from '../functions/apiProducts';
-import { fetchStores } from '../functions/apiStores';
+import baseFetch from '../functions/baseFetch';
 
 const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -25,13 +25,12 @@ function CreateProductScreen() {
     useEffect(() => {
         const getStores = async () => {
             try {
-                const data = await fetchStores();
-                setStores(data);
+                const data = await baseFetch(`group/groups/groupId/stores/`, 'GET')
+                data && setStores(data);
             } catch (error) {
                 console.log('Error fetching stores: ', error)
             }
         };
-
         getStores();
     }, []);
 
@@ -53,7 +52,7 @@ function CreateProductScreen() {
                             <AppTextInput
                                 placeholder='Title'
                                 style={styles.textInput}
-                                maxLength={50}
+                                maxLength={40}
                                 value={values.title}
                                 onChangeText={handleChange('title')}
                             />

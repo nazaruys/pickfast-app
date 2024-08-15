@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -10,11 +10,9 @@ import AppHeader from '../components/AppHeader';
 import Screen from '../components/Screen';
 import colors from '../config/colors';
 import AppText from '../components/AppText';
-import { fetchStores } from '../functions/apiStores';
 import { useNavigation } from '@react-navigation/native';
 import { fetchDeleteProduct, fetchPatchProduct, fetchProduct } from '../functions/apiProducts';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import Ripple from 'react-native-material-ripple';
+import baseFetch from '../functions/baseFetch';
 
 const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -38,10 +36,12 @@ function ProductDetailsScreen({ route }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const stores = await fetchStores();
-                setStores(stores);
                 const product = await fetchProduct(productId);
                 setProduct(product);
+                const stores = await baseFetch(`group/groups/groupId/stores/`, 'GET')
+                if (stores) {
+                    setStores(stores);
+                }
                 setLoading(false);
             } catch (error) {
                 console.log('Error fetching data: ', error);
@@ -81,6 +81,7 @@ function ProductDetailsScreen({ route }) {
                             <TextInput
                                 value={values.title}
                                 onChangeText={handleChange('title')}
+                                maxLength={40}
                                 style={styles.titleInput}
                                 placeholder="Title"
                             />

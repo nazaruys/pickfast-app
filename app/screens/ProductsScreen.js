@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, View, Image, Text } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FlatList, RefreshControl, StyleSheet, View, Image, Text, BackHandler } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import colors from '../config/colors';
@@ -18,6 +18,11 @@ function ProductsScreen() {
   const [productsActive, setProductsActive] = useState([]);
   const [productsBought, setProductsBought] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
+    return () => backHandler.remove()
+  }, [])
 
   const productBought = (product) => {
     setProductsActive(productsActive.filter(item => item.id !== product.id));

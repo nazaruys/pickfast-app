@@ -1,13 +1,13 @@
 import React, { useCallback, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, View, Image, Text } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, View, Image } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import Store from '../components/Store';
 import colors from '../config/colors';
 import AddButton from '../components/AddButton';
 import Container from '../components/Container';
-import { fetchStores } from '../functions/apiStores';
 import AppText from '../components/AppText';
+import baseFetch from '../functions/baseFetch';
 
 function StoresScreen() {
     const navigation = useNavigation();
@@ -18,16 +18,16 @@ function StoresScreen() {
     useFocusEffect(
         useCallback(() => {
             const fetchData = async () => {
-                const data = await fetchStores();
-                setStores(data);
+                const data = await baseFetch(`group/groups/groupId/stores/`, 'GET')
+                data && setStores(data);
             };
             fetchData();
         }, [])
     );
 
     const onRefresh = async () => {
-        const data = await fetchStores();
-        setStores(data);
+        const data = await baseFetch(`group/groups/groupId/stores/`, 'GET')
+        data && setStores(data);
     };
 
     const renderEmptyState = () => (
@@ -49,7 +49,7 @@ function StoresScreen() {
                 renderItem={({ item }) => (
                     <Store 
                         store={item}
-                        handlePress={() => console.log('Navigating to the Store Details Screen!')}
+                        handlePress={() => navigation.navigate('StoreDetails', { store: item })}
                     />
                 )}
                 ListEmptyComponent={renderEmptyState}

@@ -1,13 +1,14 @@
 import fetchRefreshToken from './fetchRefreshToken';
 import { getAccessToken, getGroupId } from './getAsyncStorage';
 
+API_URL = process.env.EXPO_PUBLIC_API_URL
 
 export const fetchProducts = async () => {
     try {
 		const groupId = await getGroupId()
 		const access_token = await getAccessToken()
 		const fetchData = async (token = access_token) => { 
-            return await fetch(`http://10.0.2.2:8000/api/group/groups/${groupId}/products/`, {
+            return await fetch(`${API_URL}group/groups/${groupId}/products/`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -29,7 +30,7 @@ export const fetchProducts = async () => {
             console.log(await response.json())
         }
 	} catch (error) {
-		throw error
+		throw(error)
 	}
   };
 export const fetchProduct = async (productId) => {
@@ -37,7 +38,7 @@ export const fetchProduct = async (productId) => {
 		const groupId = await getGroupId()
 		const access_token = await getAccessToken()
 		const fetchData = async (token = access_token) => { 
-            return await fetch(`http://10.0.2.2:8000/api/group/groups/${groupId}/products/${productId}/`, {
+            return await fetch(`${API_URL}group/groups/${groupId}/products/${productId}/`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -59,7 +60,7 @@ export const fetchProduct = async (productId) => {
             console.log(await response.json())
         }
 	} catch (error) {
-		throw error
+		throw(error)
 	}
   };
 
@@ -68,7 +69,7 @@ export const fetchDeleteProduct = async (productId) => {
 		const groupId = await getGroupId()
 		const access_token = await getAccessToken()
 		const fetchData = async (token = access_token) => { 
-            return await fetch(`http://10.0.2.2:8000/api/group/groups/${groupId}/products/${productId}/`, {
+            return await fetch(`${API_URL}group/groups/${groupId}/products/${productId}/`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -88,7 +89,7 @@ export const fetchDeleteProduct = async (productId) => {
             console.log(await response.json())
         }
 	} catch (error) {
-		throw error
+		throw(error)
 	}
   };
 export const fetchPostProduct = async (values) => {
@@ -96,7 +97,7 @@ export const fetchPostProduct = async (values) => {
         const access_token = await getAccessToken()
         const groupId = await getGroupId()
         const fetchData = async (token = access_token) => {
-            return await fetch(`http://10.0.2.2:8000/api/group/groups/${groupId}/products/`, {
+            return await fetch(`${API_URL}group/groups/${groupId}/products/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -123,7 +124,7 @@ export const fetchPostProduct = async (values) => {
             console.log(await response.json())
         }
     } catch (error) {
-        throw error;
+        throw(error);
     }
 };
 export const fetchPatchProduct = async (productId, values) => {
@@ -131,7 +132,7 @@ export const fetchPatchProduct = async (productId, values) => {
         const access_token = await getAccessToken()
         const groupId = await getGroupId()
         const fetchData = async (token = access_token) => {
-            return await fetch(`http://10.0.2.2:8000/api/group/groups/${groupId}/products/${productId}/`, {
+            return await fetch(`${API_URL}group/groups/${groupId}/products/${productId}/`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -158,7 +159,7 @@ export const fetchPatchProduct = async (productId, values) => {
             console.log(await response.json())
         }
     } catch (error) {
-        throw error;
+        throw(error);
     }
 };
 
@@ -168,7 +169,7 @@ export const updateProductOnCheck = async (product, bought) => {
 		const groupId = await getGroupId()
 		const access_token = await getAccessToken()
 		const fetchData = async (token = access_token) => {
-                return await fetch(`http://10.0.2.2:8000/api/group/groups/${groupId}/products/${product.id}/`, {
+                return await fetch(`${API_URL}group/groups/${groupId}/products/${product.id}/`, {
                 method: 'PATCH',
                 headers: {
                 'Authorization': `Bearer ${token}`,
@@ -191,6 +192,6 @@ export const updateProductOnCheck = async (product, bought) => {
             console.log(await response.json())
         }
     } catch (error) {
-        throw error
+        throw(error)
     }
 };

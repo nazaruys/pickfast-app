@@ -3,12 +3,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import logOut from "./logOut";
 import { getRefreshToken } from "./getAsyncStorage";
 
-
 export default fetchRefreshToken = async () => {
     try {
+        API_URL = process.env.EXPO_PUBLIC_API_URL
         console.log('Refreshing token!')
         const refreshToken = await getRefreshToken()
-        const response = await fetch("http://10.0.2.2:8000/api/core/refresh/", {
+        const response = await fetch(`${API_URL}core/refresh/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -22,11 +22,11 @@ export default fetchRefreshToken = async () => {
             await AsyncStorage.setItem('accessToken', data.access)
             console.log('Refreshed succesfully!')
             return data.access 
-        } else {
-            logOut()
-            return
         }
+        logOut()
+        return
     } catch (error) {
-        throw error
+        logOut()
+        return
     }
 }

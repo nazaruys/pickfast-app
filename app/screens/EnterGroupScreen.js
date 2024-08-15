@@ -54,6 +54,7 @@ function EnterGroupScreen() {
 
     const createGroup = async () => {
         data = await fetchPostGroup()
+        console.log('Data: ', data)
         await AsyncStorage.setItem('groupId', data.code)
 		    navigation.navigate('Home')
     }

@@ -48,7 +48,7 @@ function LoginScreen() {
                 createOkAlert('Invalid credentials')
             }
         } catch (error) {
-            throw error
+            throw(error)
         }
     };
 

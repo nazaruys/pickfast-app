@@ -10,7 +10,7 @@ import colors from '../config/colors';
 import UserCard from '../components/UserCard';
 import AppText from '../components/AppText';
 import { fetchUser, fetchUserById } from '../functions/apiUsers';
-import { fetchGroupPrivacy, fetchMembers, fetchMembersBlocked } from '../functions/apiGroups';
+import { fetchGroupPrivacy, fetchMembersBlocked } from '../functions/apiGroups';
 import { 
     createChangeGroupPrivacyAlert, 
     createGiveAdminAlert, 
@@ -21,6 +21,7 @@ import {
     createOkAlert
 } from '../functions/alerts';
 import DropDownList from '../components/DropDownList';
+import baseFetch from '../functions/baseFetch';
 
 function GroupScreen() {
     const [isPrivate, setIsPrivate] = useState(false)
@@ -33,7 +34,8 @@ function GroupScreen() {
         useCallback(() => {
           const fetchData = async () => {
             await fetchUser(setUserData)
-            await fetchMembers(setMembers)
+            const data = await baseFetch('group/groups/groupId/members/', 'GET')
+            data && setMembers(data)
             await fetchGroupPrivacy(setIsPrivate)
             const newMembersBlocked = await fetchMembersBlocked()
             for (const memberId of newMembersBlocked) {
@@ -77,7 +79,7 @@ function GroupScreen() {
                             iconShown={userData.admin_of ? true : false}
                             blocked={false}
                             onPressDeleteIcon={() => createRemoveUserAlert(item, setMembers, membersBlocked, setMembersBlocked)}
-                            onPressAdminIcon={() => createGiveAdminAlert(item, setMembers)}
+                            onPressAdminIcon={() => createGiveAdminAlert(item, setMembers, setUserData)}
                         />
                     )}
                     ListFooterComponent={

@@ -21,6 +21,7 @@ import EnterGroupScreen from './screens/EnterGroupScreen'
 import { navigationRef } from './navigationService';
 import { getGroupId, getRefreshToken } from './functions/getAsyncStorage';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
+import StoreDetailsScreen from './screens/StoreDetailsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -69,21 +70,21 @@ const checkToken = async () => {
   	try {
       	const refreshToken = await getRefreshToken()
       	if (refreshToken) {
-			const decodedToken = jwtDecode(refreshToken);
-			const currentTime = Date.now() / 1000;
-			if (decodedToken.exp > currentTime) {
-				const groupId = await getGroupId()
-				if (groupId && groupId.length === 6) {
-					setInitialRoute('Home');
-				} else {
-					setInitialRoute('EnterGroup');
-				}
-			} else {
-				setInitialRoute('Welcome');
-			}
-      } else {
-          setInitialRoute('Welcome');
-      }
+          const decodedToken = jwtDecode(refreshToken);
+          const currentTime = Date.now() / 1000;
+          if (decodedToken.exp > currentTime) {
+            const groupId = await getGroupId()
+            if (groupId && groupId.length === 6) {
+              setInitialRoute('Home');
+            } else {
+              setInitialRoute('EnterGroup');
+            }
+          } else {
+            setInitialRoute('Welcome');
+          }
+        } else {
+            setInitialRoute('Welcome');
+        }
       } catch (error) {
       console.error('Error checking token', error);
       setInitialRoute('Welcome');
@@ -123,6 +124,11 @@ return (
       <Stack.Screen
         name="CreateStore"
         component={CreateStoreScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="StoreDetails"
+        component={StoreDetailsScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

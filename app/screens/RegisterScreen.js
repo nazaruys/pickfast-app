@@ -60,7 +60,7 @@ function RegisterScreen() {
                 }
             }
         } catch (error) {
-            throw error
+            throw(error)
         }
       };
 
