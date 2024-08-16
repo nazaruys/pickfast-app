@@ -6,127 +6,83 @@ import { getAccessToken } from './getAsyncStorage';
 
 API_URL = process.env.EXPO_PUBLIC_API_URL
 
-export const fetchUser = async (setUserData) => {
-    // Gets and sets the data for current user
-    try {
-        const access_token = await getAccessToken()
-        const decodedToken = jwtDecode(access_token);
-        const fetchData = async (token = access_token) => { 
-            return await fetch(`${API_URL}core/users/${decodedToken.user_id}/`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })}
-        const response = await fetchData()
-        if (response.status === 401) {
-            const access = await fetchRefreshToken()
-            if (access) {
-                const response = await fetchData(access)
-                const data = await response.json()
-                setUserData(data);
-            }
-        } else if (response.status === 200) {
-            const data = await response.json();
-            setUserData(data);
-        } else {
-            console.log(await response.json())
-        }
-    } catch (error) {
-        throw(error)
-    }
+export const fetchUser = async () => {
+    const data = baseFetch('core/users/userId/', 'GET')
+    return data
 };
 
-export const fetchUserById = async (id) => {
+export const fetchPatchUserGroupCode = async (groupCode) => {
     try {
-        const access_token = await getAccessToken()
-        const fetchData = async (token = access_token) => { 
-            return await fetch(`${API_URL}core/users/${id}/`, {
-            method: 'GET', 
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })}
-        const response = await fetchData()
-        if (response.status === 401) {
-            const access = await fetchRefreshToken()
-            if (access) {
-                const response = await fetchData(access)
-                const data = await response.json()
-                return data
-            }
-        } else if (response.status === 200) {
-            const data = await response.json();
-            return data
-        } else {
-            console.log(await response.json())
-        }
-    } catch (error) {
-        throw(error)
-    }
-};
-
-export const fetchPatchUserGroupCode = async (group_code) => {
-    try {
-        const access_token = await getAccessToken()
-        const fetchData = async (token = access_token) => {
-            return await fetch(`${API_URL}core/users/${jwtDecode(access_token).user_id}/`, {
-            method: 'PATCH',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                group_id: group_code
-            })
-        })}
-        const response = await fetchData()
-        if (response.status === 401) {
-            const access = await fetchRefreshToken()
-            if (access) {
-                await fetchData(access)
-                await AsyncStorage.setItem('groupId', group_code)
-            }
-        } else if (response.status === 200) {
-            await AsyncStorage.setItem('groupId', group_code)
-        } else {
-            console.log(response.status)
-            return response
-        }
-    } catch (error) {
-        throw(error)
-    }
-};
-export const fetchPatchUser = async (values) => {
-    try {
-        const access_token = await getAccessToken()
-        const fetchData = async (token = access_token) => {
-            return await fetch(
-                `${API_URL}core/users/${jwtDecode(access_token).user_id}/`, 
-                {method: 'PATCH',
+        const fetchData = async () => {
+            const accessToken = await getAccessToken();
+            const options = {
+                method: 'PATCH',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    username: values.username,
-                    name: values.name
-                    })}
-                )
-        }
-        const response = await fetchData()
-        if (response.status === 401) {
-            const access = await fetchRefreshToken()
-            if (access) {
-                const response = await fetchData(access)
+                body: JSON.stringify({group_id: groupCode})
+            };
+            const userId = jwtDecode(accessToken).user_id
+            return await fetch(`${API_URL}core/users/${userId}/`, options);
+        };
+        for (let i = 0; i < 2; i++) {
+            const response = await fetchData()
+            if (response.status === 400 || response.status === 403 || response.status === 200) {
                 return response
+            } else if (response.status === 401) {
+                const access = await fetchRefreshToken()
+                if (!access || i === 1) {
+                    logOut()
+                    return null
+                }
+            } else {
+                logOut()
+                return null
             }
-            return response
         }
-        return response
-
     } catch (error) {
-        throw(error)
+        console.error("Fetch error:", error);
+        logOut()
+        return null
+    }
+};
+
+export const fetchPatchUser = async () => {
+    try {
+        const fetchData = async () => {
+            const accessToken = await getAccessToken();
+            const options = {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({username: values.username, name: values.name})
+            };
+            const userId = jwtDecode(accessToken).user_id
+            return await fetch(API_URL + `core/users/${userId}/`, options);
+        };
+        for (let i = 0; i < 2; i++) {
+            const response = await fetchData()
+            if (response.status === 200 || response.status === 400) {
+                return response;
+            } else if (response.status === 401) {
+                const access = await fetchRefreshToken()
+                if (!access || i === 1) {
+                    logOut()
+                    return null
+                }
+            } else {
+                logOut()
+                return null
+            }
+        }
+          
+    } catch (error) {
+        console.error("Fetch error:", error);
+        logOut()
+        return null
     }
 };
 
@@ -154,7 +110,9 @@ export const fetchLoginUser = async (values) => {
             return null
         }
     } catch (error) {
-        throw(error)
+        console.error("Fetch error:", error);
+        logOut()
+        return null
     }
 };
 
@@ -177,7 +135,9 @@ export const fetchPostUser = async (values) => {
         const data = await response.json();
         return data
     } catch (error) {
-        throw(error)
+        console.error("Fetch error:", error);
+        logOut()
+        return null
     }
 };
 

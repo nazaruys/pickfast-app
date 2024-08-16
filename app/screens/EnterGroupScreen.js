@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Alert, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
   CodeField,
   Cursor,
@@ -15,8 +15,8 @@ import AppText from '../components/AppText';
 import AppButton from '../components/AppButton';
 import { fetchPatchUserGroupCode } from '../functions/apiUsers';
 import { createLogoutAlert, createOkAlert } from '../functions/alerts';
-import { fetchPostGroup } from '../functions/apiGroups';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import baseFetch from '../functions/baseFetch';
 
 function EnterGroupScreen() {
     const navigation = useNavigation()
@@ -33,30 +33,35 @@ function EnterGroupScreen() {
     const handleCodeInput = async (input) => {
       setCode(input.toUpperCase());
       if (input.length === CELL_COUNT) {
-        const response = await fetchPatchUserGroupCode(input.toUpperCase())
+        const newGroupId = input.toUpperCase()
+        const response = await fetchPatchUserGroupCode(newGroupId)
         if (response) {
-			setCode('')
-			let message;
-			if (response.status === 400) {
-				message = 'Group does not exist'
-			} else if (response.status === 403) {
-				message = 'You are blocked from this group'
-			} else {
-				message = 'Unknown error'
-			}
-			createOkAlert(message)
-			return
+          setCode('')
+          if (response.status === 200) {
+            await AsyncStorage.setItem('groupId', newGroupId)
+            navigation.navigate('Home')
+            return
+          }
+          let message;
+          if (response.status === 400) {
+            message = 'Group does not exist'
+          } else if (response.status === 403) {
+            message = 'You are blocked from this group'
+          } else {
+            message = 'Unknown error'
+          }
+          createOkAlert(message)
+          return
         }
-        navigation.navigate('Home')
-        setCode('')
       }
     };
 
     const createGroup = async () => {
-        data = await fetchPostGroup()
-        console.log('Data: ', data)
-        await AsyncStorage.setItem('groupId', data.code)
-		    navigation.navigate('Home')
+        const data = await baseFetch('group/groups/', 'POST', {})
+        if (data) {
+            await AsyncStorage.setItem('groupId', data.code)
+            navigation.navigate('Home')
+        }
     }
     
     return (

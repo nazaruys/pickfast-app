@@ -16,7 +16,8 @@ function ProfileScreen() {
     useFocusEffect(
         useCallback(() => {
             const fetchData = async () => {
-                await fetchUser(setUserData)
+                const data = await fetchUser()
+                data && setUserData(data)
             };
             fetchData()   
         }, [])

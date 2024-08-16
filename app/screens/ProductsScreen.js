@@ -7,9 +7,9 @@ import Product from '../components/Product';
 import DropDownList from '../components/DropDownList';
 import AddButton from '../components/AddButton';
 import Container from '../components/Container';
-import { fetchProducts, updateProductOnCheck } from '../functions/apiProducts';
 import sortProductsByPriority from '../functions/sortProductsByPriority';
 import AppText from '../components/AppText';
+import baseFetch from '../functions/baseFetch';
 
 function ProductsScreen() {
   const navigation = useNavigation();
@@ -24,34 +24,41 @@ function ProductsScreen() {
     return () => backHandler.remove()
   }, [])
 
-  const productBought = (product) => {
-    setProductsActive(productsActive.filter(item => item.id !== product.id));
-    setProductsBought([...productsBought, product]);
-    updateProductOnCheck(product, true);
+  const productBought = async (product) => {
+    const currentTime = new Date().toISOString();
+    const data = await baseFetch(`group/groups/groupId/products/${product.id}/`, 'PATCH', {date_buyed: currentTime})
+    if (data) {
+      setProductsActive(productsActive.filter(item => item.id !== product.id));
+      setProductsBought([...productsBought, product]);
+    }
   };
 
-  const productUnBought = (product) => {
-    setProductsBought(productsBought.filter(item => item.id !== product.id));
-    setProductsActive(sortProductsByPriority([...productsActive, product]));
-    updateProductOnCheck(product, false);
+  const productUnBought = async (product) => {
+    const data = await baseFetch(`group/groups/groupId/products/${product.id}/`, 'PATCH', {date_buyed: null})
+    if (data) {
+      setProductsBought(productsBought.filter(item => item.id !== product.id));
+      setProductsActive(sortProductsByPriority([...productsActive, product]));
+    }
   };
+
+  const setProducts = (data) => {
+    const newProductsActive = data.filter(product => !product.date_buyed);
+    const newProductsBought = data.filter(product => product.date_buyed);
+
+    setProductsActive(sortProductsByPriority(newProductsActive));
+    setProductsBought(newProductsBought)
+  }
 
   const onRefresh = async () => {
-    const data = await fetchProducts();
-    setProductsActive(sortProductsByPriority(data.filter(product => !product.date_buyed)));
-    setProductsBought(data.filter(product => product.date_buyed));
+    const data = await baseFetch(`group/groups/groupId/products/`, 'GET')
+    data && setProducts(data)
   };
 
   useFocusEffect(
     useCallback(() => {
         const fetchData = async () => {
-            const data = await fetchProducts();
-
-            const newProductsActive = data.filter(product => !product.date_buyed);
-            const newProductsBought = data.filter(product => product.date_buyed);
-
-            setProductsActive(sortProductsByPriority(newProductsActive));
-            setProductsBought(newProductsBought)
+            const data = await baseFetch(`group/groups/groupId/products/`, 'GET')
+            data && setProducts(data)
         };
         fetchData();
     }, [])

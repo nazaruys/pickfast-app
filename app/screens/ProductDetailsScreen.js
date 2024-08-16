@@ -11,7 +11,6 @@ import Screen from '../components/Screen';
 import colors from '../config/colors';
 import AppText from '../components/AppText';
 import { useNavigation } from '@react-navigation/native';
-import { fetchDeleteProduct, fetchPatchProduct, fetchProduct } from '../functions/apiProducts';
 import baseFetch from '../functions/baseFetch';
 
 const validationSchema = Yup.object().shape({
@@ -29,19 +28,18 @@ function ProductDetailsScreen({ route }) {
     const [loading, setLoading] = useState(true);
 
     const onDeleteProduct = async () => {
-        await fetchDeleteProduct(productId)
-        navigation.goBack()
+        const data = await baseFetch(`group/groups/groupId/products/${productId}/`, 'DELETE')
+        data && navigation.goBack()
     }
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const product = await fetchProduct(productId);
-                setProduct(product);
+                const product = await baseFetch(`group/groups/groupId/products/${productId}/`, 'GET')
+                product && setProduct(product);
+
                 const stores = await baseFetch(`group/groups/groupId/stores/`, 'GET')
-                if (stores) {
-                    setStores(stores);
-                }
+                stores && setStores(stores);
                 setLoading(false);
             } catch (error) {
                 console.log('Error fetching data: ', error);
@@ -67,8 +65,12 @@ function ProductDetailsScreen({ route }) {
                 }}
                 validationSchema={validationSchema}
                 onSubmit={async (values) => {
-                    await fetchPatchProduct(product.id, values);
-                    navigation.goBack();
+                    const data = await baseFetch(`group/groups/groupId/products/${productId}/`, 'PATCH', {
+                        title: values.title,
+                        priority: values.priority,
+                        store_id: values.store_id
+                    })
+                    data && navigation.goBack();
                 }}
             >
                 {({ handleChange, handleSubmit, setFieldValue, values, errors, touched }) => (

@@ -9,8 +9,8 @@ import Screen from '../components/Screen';
 import colors from '../config/colors';
 import UserCard from '../components/UserCard';
 import AppText from '../components/AppText';
-import { fetchUser, fetchUserById } from '../functions/apiUsers';
-import { fetchGroupPrivacy, fetchMembersBlocked } from '../functions/apiGroups';
+import DropDownList from '../components/DropDownList';
+import { fetchUser } from '../functions/apiUsers';
 import { 
     createChangeGroupPrivacyAlert, 
     createGiveAdminAlert, 
@@ -20,8 +20,8 @@ import {
     createUnBlockMemberAlert,
     createOkAlert
 } from '../functions/alerts';
-import DropDownList from '../components/DropDownList';
 import baseFetch from '../functions/baseFetch';
+
 
 function GroupScreen() {
     const [isPrivate, setIsPrivate] = useState(false)
@@ -33,14 +33,20 @@ function GroupScreen() {
     useFocusEffect(
         useCallback(() => {
           const fetchData = async () => {
-            await fetchUser(setUserData)
-            const data = await baseFetch('group/groups/groupId/members/', 'GET')
-            data && setMembers(data)
-            await fetchGroupPrivacy(setIsPrivate)
-            const newMembersBlocked = await fetchMembersBlocked()
+            const newUserData = await fetchUser()
+            newUserData && setUserData(newUserData)
+
+            const members = await baseFetch('group/groups/groupId/members/', 'GET')
+            members && setMembers(members)
+
+            const data = await baseFetch(`group/groups/groupId/`, 'GET')
+            data && setIsPrivate(data.private)
+
+            const groupData = await baseFetch(`group/groups/groupId/`, 'GET')
+            const newMembersBlocked = groupData ? groupData.users_blacklist : []
             for (const memberId of newMembersBlocked) {
-                const member = await fetchUserById(memberId)
-                if (!membersBlocked.includes(member)) {
+                const member = await baseFetch(`core/users/${memberId}/`, 'GET')
+                if (member && !membersBlocked.includes(member)) {
                     setMembersBlocked([...membersBlocked, member]);
                 }
             }

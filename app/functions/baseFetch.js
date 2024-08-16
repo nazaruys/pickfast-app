@@ -1,3 +1,5 @@
+import { jwtDecode } from "jwt-decode"
+
 import fetchRefreshToken from "./fetchRefreshToken"
 import { getAccessToken, getGroupId } from "./getAsyncStorage"
 import logOut from "./logOut"
@@ -5,7 +7,9 @@ import logOut from "./logOut"
 export default baseFetch = async (passedPath, method, body = {}) => {
     try {
         const groupId = await getGroupId()
-        let path = passedPath.replace('groupId', groupId)
+        const accessToken = await getAccessToken();
+        const userId = jwtDecode(accessToken).user_id
+        let path = passedPath.replace('groupId', groupId).replace('userId', userId)
         const fetchData = async () => {
             const accessToken = await getAccessToken();
             const options = {

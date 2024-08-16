@@ -12,8 +12,9 @@ import AppButton from '../components/AppButton';
 import AppTextInput from '../components/AppTextInput';
 import AppText from '../components/AppText';
 import { fetchLoginUser } from '../functions/apiUsers';
-import { fetchGroupId } from '../functions/apiGroups';
 import { createOkAlert } from '../functions/alerts';
+import baseFetch from '../functions/baseFetch';
+import { getAccessToken } from '../functions/getAsyncStorage';
 
 
 const validationSchema = Yup.object().shape({
@@ -37,9 +38,9 @@ function LoginScreen() {
                 await AsyncStorage.setItem('refreshToken', tokens.refresh);
                 await AsyncStorage.setItem('accessToken', tokens.access);
 
-                groupId = await fetchGroupId()
-                if (groupId) {
-                    await AsyncStorage.setItem('groupId', groupId);
+                const user = await baseFetch(`core/users/userId/`, "GET")
+                if (user) {
+                    await AsyncStorage.setItem('groupId', user.group_id);
                     navigation.navigate('Home')
                 } else {
                     navigation.navigate('EnterGroup')

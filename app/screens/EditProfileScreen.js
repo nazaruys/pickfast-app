@@ -11,6 +11,7 @@ import AppTextInput from '../components/AppTextInput';
 import AppButton from '../components/AppButton';
 import { fetchPatchUser, fetchUser } from '../functions/apiUsers';
 import { createOkAlert } from '../functions/alerts';
+import baseFetch from '../functions/baseFetch';
 
 const validationSchema = Yup.object().shape({
     username: Yup.string().required('Username is required'),
@@ -26,8 +27,11 @@ function EditProfileScreen() {
     useFocusEffect(
         useCallback(() => {
           const fetchData = async () => {
-            await fetchUser(setUserData)
-            setIsDataFetched(true);
+            const data = await fetchUser()
+            if (data) {
+                setUserData(data)
+                setIsDataFetched(true);
+            }
           };
           fetchData();
         }, [])
@@ -35,10 +39,12 @@ function EditProfileScreen() {
 
     const onSave = async (values) => {
         response = await fetchPatchUser(values)
-        if (response.status === 200) {
-            navigation.goBack();
-        } else if (response.status === 400) {
-            createOkAlert('Username is already taken')
+        if (response) {
+            if (response.status === 200) {
+                navigation.goBack();
+            } else if (response.status === 400) {
+                createOkAlert('Username is already taken')
+            }
         }
         
     }

@@ -1,13 +1,11 @@
 import { Alert } from "react-native";
 import logOut from "./logOut";
-import { 
-    changeGroupPrivacy, 
-    handleLeave, 
-    handleRemoveUser
-} from "./handle";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import baseFetch from "./baseFetch";
-import { fetchMakeUserAdmin, fetchUnBlockUser } from "./apiGroups";
 import { fetchUser } from "./apiUsers";
+import { getAccessToken } from "./getAsyncStorage";
+import { resetToEnterGroup } from "../navigationService";
 
 export const createLogoutAlert = () =>
     Alert.alert('Are you sure you want to logout?', 'You will need to login or create a new account', [
@@ -18,18 +16,31 @@ export const createLogoutAlert = () =>
         {text: 'Log out', onPress: logOut},
   ], {cancelable: true});
 
-export const createExitGroupAlert = () =>
+export const createExitGroupAlert = () => {
+    const leaveGroup = async () => {
+        const data = await baseFetch(`core/users/userId/`, "PATCH", {group_id: null})
+        if (data) {
+            await AsyncStorage.removeItem('groupId')
+            resetToEnterGroup()
+        }
+    }
     Alert.alert('Confirm', 'Are you sure you want to leave your group?', [
         {
         text: 'Cancel',
         style: 'cancel',
         },
-        {text: 'Leave', onPress: handleLeave},
-], {cancelable: true});
+        {text: 'Leave', onPress: leaveGroup},
+    ], {cancelable: true});
+}
 
 export const createRemoveUserAlert = (user, setMembers, membersBlocked, setMembersBlocked) => {
-    const removeUser = async (block = false) => {
-        await handleRemoveUser(user, block, membersBlocked, setMembersBlocked)
+    const removeUserAndRefresh = async (block = false) => {
+        await baseFetch(`core/users/${user.id}/`, 'PATCH', {group_id: null})
+        if (block) {
+            const data = await baseFetch('group/groups/groupId/', 'PATCH', {users_blacklist: [user.id]})
+            data && setMembersBlocked([...membersBlocked, user])
+        }
+        
         const members = await baseFetch('group/groups/groupId/members/', 'GET')
         members && setMembers(members)
     }
@@ -38,20 +49,26 @@ export const createRemoveUserAlert = (user, setMembers, membersBlocked, setMembe
         text: 'Cancel',
         style: 'cancel',
         },
-        {text: 'Remove and block', onPress: () => removeUser(block=true)},
-        {text: 'Remove', onPress: () => removeUser(block=false)},
+        {text: 'Remove and block', onPress: () => removeUserAndRefresh(block=true)},
+        {text: 'Remove', onPress: () => removeUserAndRefresh(block=false)},
     ], {cancelable: true})
 }
 
-export const createChangeGroupPrivacyAlert = (isPrivate, setIsPrivate) =>
+export const createChangeGroupPrivacyAlert = (isPrivate, setIsPrivate) => {
+    const changeGroupPrivacy = async () => {
+        const newPrivate = !isPrivate
+        const data = await baseFetch('group/groups/groupId/', 'PATCH', {private: newPrivate})
+        data && setIsPrivate(newPrivate)
+    }
     Alert.alert(`Are you sure you want to make this group ${isPrivate ? 'Public' : 'Private'}?`, 
             `This group is then ${isPrivate ? 'open' : 'closed'} for anyone`, [
         {
         text: 'Cancel',
         style: 'cancel',
         },
-        {text: 'Confirm', onPress: () => changeGroupPrivacy(isPrivate, setIsPrivate)},
-], {cancelable: true});
+        {text: 'Confirm', onPress: changeGroupPrivacy},
+    ], {cancelable: true})
+}
 
 export const createNotAdminAlert = () =>
     Alert.alert(`You are not allowed to change the privacy of the group`, 
@@ -64,9 +81,11 @@ export const createNotAdminAlert = () =>
 
 export const createGiveAdminAlert = (user, setMembers, setUserData) => {
     const giveAdminAndRefresh = async () => {
-        await fetchMakeUserAdmin(user)
+        await baseFetch('group/groups/groupId/', 'PATCH', {admin: user.id})
 
-        await fetchUser(setUserData)
+        const data = fetchUser()
+        data && setUserData(data)
+
         const members = await baseFetch('group/groups/groupId/members/', 'GET')
         members && setMembers(members)
     }
@@ -92,7 +111,10 @@ export const createOkAlert = (message) => {
   
   export const createUnBlockMemberAlert = (user, setMembers, membersBlocked, setMembersBlocked) => {
     const unblockMemberAndRefresh = async () => {
-        await fetchUnBlockUser(user, membersBlocked, setMembersBlocked)
+        const newMembersBlocked = membersBlocked.filter(member => member.id !== user.id)
+
+        const data = await baseFetch('group/groups/groupId/', 'PATCH', {users_blacklist: newMembersBlocked})
+        data && setMembersBlocked(newMembersBlocked)
 
         const members = await baseFetch('group/groups/groupId/members/', 'GET')
         members && setMembers(members)
