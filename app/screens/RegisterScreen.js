@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,6 +13,7 @@ import AppTextInput from '../components/AppTextInput';
 import AppText from '../components/AppText';
 import { fetchPostUser } from '../functions/apiUsers';
 import { createOkAlert } from '../functions/alerts';
+import AppProgress from '../components/AppProgress';
 
 const passwordValidation = Yup.string()
     .required('Password is required')
@@ -37,46 +38,50 @@ const validationSchema = Yup.object().shape({
 });
 
 function RegisterScreen() {
-    const navigation = useNavigation()
+    const navigation = useNavigation();
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (values) => {
+        setLoading(true);
         try {
             const data = await fetchPostUser(values);
             if (data.token) {
                 await AsyncStorage.setItem('refreshToken', data.token.refresh);
                 await AsyncStorage.setItem('accessToken', data.token.access);
-
-                navigation.navigate('EnterGroup')
+                setLoading(false);
+                navigation.navigate('EnterGroup');
             } else {
+                setLoading(false);
                 if (data.username) {
-                    createOkAlert(data.username[0])
+                    createOkAlert(data.username[0]);
                 } else if (data.email) {
-                    createOkAlert(data.email[0])
+                    createOkAlert(data.email[0]);
                 } else if (data.password) {
-                    createOkAlert(data.password[0])
+                    createOkAlert(data.password[0]);
                 } else {
-                    console.log(data)
-                    createOkAlert('Something went wrong')
+                    createOkAlert('Something went wrong');
                 }
             }
         } catch (error) {
-            throw(error)
+            setLoading(false);
+            console.error(error);
+            createOkAlert('Something went wrong');
         }
-      };
+    };
 
     return (
         <Screen style={styles.container}>
-            <AppHeader title='Register' />
-            <View style={styles.form}>
+            <AppHeader title="Register" />
+            <ScrollView style={styles.form}>
                 <Formik
                     initialValues={{ username: '', email: '', name: '', password: '', confirmPassword: '' }}
                     validationSchema={validationSchema}
-                    onSubmit={(values) => handleSubmit(values)}
+                    onSubmit={handleSubmit}
                 >
                     {({ handleChange, handleSubmit, values, errors, touched }) => (
                         <>
                             <AppTextInput
-                                placeholder='Username'
+                                placeholder="Username"
                                 style={styles.textInput}
                                 value={values.username}
                                 onChangeText={handleChange('username')}
@@ -84,16 +89,16 @@ function RegisterScreen() {
                             {touched.username && errors.username && <AppText style={styles.errorText}>{errors.username}</AppText>}
 
                             <AppTextInput
-                                placeholder='Email'
+                                placeholder="Email"
                                 style={styles.textInput}
                                 value={values.email}
                                 onChangeText={handleChange('email')}
-                                keyboardType='email-address'
+                                keyboardType="email-address"
                             />
                             {touched.email && errors.email && <AppText style={styles.errorText}>{errors.email}</AppText>}
 
                             <AppTextInput
-                                placeholder='Name'
+                                placeholder="Name"
                                 style={styles.textInput}
                                 value={values.name}
                                 onChangeText={handleChange('name')}
@@ -101,7 +106,7 @@ function RegisterScreen() {
                             {touched.name && errors.name && <AppText style={styles.errorText}>{errors.name}</AppText>}
 
                             <AppTextInput
-                                placeholder='Password'
+                                placeholder="Password"
                                 style={styles.textInput}
                                 value={values.password}
                                 onChangeText={handleChange('password')}
@@ -110,40 +115,47 @@ function RegisterScreen() {
                             {touched.password && errors.password && <AppText style={styles.errorText}>{errors.password}</AppText>}
 
                             <AppTextInput
-                                placeholder='Confirm Password'
+                                placeholder="Confirm Password"
                                 style={styles.textInput}
                                 value={values.confirmPassword}
                                 onChangeText={handleChange('confirmPassword')}
                                 secureTextEntry
                             />
                             {touched.confirmPassword && errors.confirmPassword && <AppText style={styles.errorText}>{errors.confirmPassword}</AppText>}
+                            <AppText style={styles.emailInfo}>*We'll use the email provided above to send you the latest updates of our app.</AppText>
                             <AppButton title="Register" style={styles.button} onPress={handleSubmit} />
                         </>
                     )}
                 </Formik>
-            </View>
+            </ScrollView>
+            {loading && (
+                <AppProgress loading={loading} />
+            )}
         </Screen>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: colors.background
+        backgroundColor: colors.background,
     },
     form: {
         padding: 20,
     },
     textInput: {
-        marginVertical: 15
+        marginVertical: 15,
     },
     errorText: {
         color: 'red',
-        marginBottom: 10
+        marginBottom: 10,
     },
     button: {
-        marginVertical: 15
-    }
-
-})
+        marginVertical: 15,
+    },
+    emailInfo: {
+        fontSize: 16,
+        color: colors.darkGrey,
+    },
+});
 
 export default RegisterScreen;

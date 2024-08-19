@@ -11,11 +11,10 @@ import AppHeader from '../components/AppHeader';
 import AppButton from '../components/AppButton';
 import AppTextInput from '../components/AppTextInput';
 import AppText from '../components/AppText';
+// import AppProgress from '../components/AppProgress';
 import { fetchLoginUser } from '../functions/apiUsers';
 import { createOkAlert } from '../functions/alerts';
 import baseFetch from '../functions/baseFetch';
-import { getAccessToken } from '../functions/getAsyncStorage';
-
 
 const validationSchema = Yup.object().shape({
     username: Yup.string().required('Username is required'),
@@ -23,49 +22,49 @@ const validationSchema = Yup.object().shape({
 });
 
 function LoginScreen() {
-    const navigation = useNavigation()
-
-    let previousValues = null;
+    const navigation = useNavigation();
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (values) => {
-        if (previousValues && JSON.stringify(values) === JSON.stringify(previousValues)) {
-            return;
-        }
-        previousValues = values;
+        setLoading(true);
         try {
             const tokens = await fetchLoginUser(values);
             if (tokens) {
                 await AsyncStorage.setItem('refreshToken', tokens.refresh);
                 await AsyncStorage.setItem('accessToken', tokens.access);
 
-                const user = await baseFetch(`core/users/userId/`, "GET")
-                if (user) {
+                const user = await baseFetch(`core/users/userId/`, "GET");
+                setLoading(false);
+                if (user.group_id) {
                     await AsyncStorage.setItem('groupId', user.group_id);
-                    navigation.navigate('Home')
+                    navigation.navigate('Home');
                 } else {
-                    navigation.navigate('EnterGroup')
+                    navigation.navigate('EnterGroup');
                 }
             } else {
-                createOkAlert('Invalid credentials')
+                setLoading(false);
+                createOkAlert('Invalid credentials');
             }
         } catch (error) {
-            throw(error)
+            setLoading(false);
+            console.error(error);
+            createOkAlert('Something went wrong');
         }
     };
 
     return (
         <Screen style={styles.container}>
-            <AppHeader title='Login' />
+            <AppHeader title="Login" />
             <View style={styles.form}>
                 <Formik
                     initialValues={{ username: '', password: '' }}
                     validationSchema={validationSchema}
-                    onSubmit={(values) => handleSubmit(values)}
+                    onSubmit={handleSubmit}
                 >
                     {({ handleChange, handleSubmit, values, errors, touched }) => (
                         <>
                             <AppTextInput
-                                placeholder='Username'
+                                placeholder="Username"
                                 style={styles.textInput}
                                 value={values.username}
                                 onChangeText={handleChange('username')}
@@ -73,7 +72,7 @@ function LoginScreen() {
                             {touched.username && errors.username && <AppText style={styles.errorText}>{errors.username}</AppText>}
 
                             <AppTextInput
-                                placeholder='Password'
+                                placeholder="Password"
                                 style={styles.textInput}
                                 value={values.password}
                                 onChangeText={handleChange('password')}
@@ -85,28 +84,31 @@ function LoginScreen() {
                     )}
                 </Formik>
             </View>
+            {/* Disabled for testing */}
+            {/* {loading && (
+                <AppProgress loading={loading} />
+            )} */}
         </Screen>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: colors.background
+        backgroundColor: colors.background,
     },
     form: {
         padding: 20,
     },
     textInput: {
-        marginVertical: 15
+        marginVertical: 15,
     },
     errorText: {
         color: 'red',
-        marginBottom: 10
+        marginBottom: 10,
     },
     button: {
-        marginVertical: 15
-    }
-
-})
+        marginVertical: 15,
+    },
+});
 
 export default LoginScreen;

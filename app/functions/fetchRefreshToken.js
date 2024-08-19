@@ -6,7 +6,6 @@ import { getRefreshToken } from "./getAsyncStorage";
 export default fetchRefreshToken = async () => {
     try {
         API_URL = process.env.EXPO_PUBLIC_API_URL
-        console.log('Refreshing token!')
         const refreshToken = await getRefreshToken()
         const response = await fetch(`${API_URL}core/refresh/`, {
             method: 'POST',
@@ -20,7 +19,6 @@ export default fetchRefreshToken = async () => {
         if (response.status === 200) {
             const data = await response.json()
             await AsyncStorage.setItem('accessToken', data.access)
-            console.log('Refreshed succesfully!')
             return data.access 
         }
         logOut()

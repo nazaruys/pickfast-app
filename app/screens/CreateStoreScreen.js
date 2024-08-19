@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
@@ -10,6 +10,7 @@ import AppHeader from '../components/AppHeader';
 import AppTextInput from '../components/AppTextInput';
 import AppButton from '../components/AppButton';
 import baseFetch from '../functions/baseFetch';
+import AppProgress from '../components/AppProgress';
 
 const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -17,6 +18,8 @@ const validationSchema = Yup.object().shape({
 
 function CreateProductScreen() {
     const navigation = useNavigation();
+
+    const [loading, setLoading] = useState(false);
 
     return (
         <Screen style={styles.container}>
@@ -26,9 +29,11 @@ function CreateProductScreen() {
                     initialValues={{ name: ''}}
                     validationSchema={validationSchema}
                     onSubmit={async (values, { resetForm }) => {
+                        setLoading(true)
                         const data = await baseFetch(`group/groups/groupId/stores/`, 'POST', {name: values.name})
                         data && navigation.goBack();
                         resetForm();
+                        setLoading(false)
                     }}
                 >
                     {({ handleChange, handleSubmit, values, errors, touched }) => (
@@ -46,6 +51,9 @@ function CreateProductScreen() {
                     )}
                 </Formik>
             </View>
+            {loading && (
+                <AppProgress loading={loading} />
+            )}
         </Screen>
     );
 }

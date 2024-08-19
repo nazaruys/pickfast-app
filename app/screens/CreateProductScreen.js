@@ -11,6 +11,7 @@ import AppHeader from '../components/AppHeader';
 import AppTextInput from '../components/AppTextInput';
 import AppButton from '../components/AppButton';
 import baseFetch from '../functions/baseFetch';
+import AppProgress from '../components/AppProgress';
 
 const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -20,6 +21,8 @@ function CreateProductScreen() {
     const navigation = useNavigation();
 
     const [stores, setStores] = useState([]);
+
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const getStores = async () => {
@@ -41,6 +44,7 @@ function CreateProductScreen() {
                     initialValues={{ title: '', priority: 'M', store_id: null }}
                     validationSchema={validationSchema}
                     onSubmit={async (values, { resetForm }) => {
+                        setLoading(true)
                         const data = await baseFetch('group/groups/groupId/products/', 'POST', {
                             title: values.title,
                             priority: values.priority,
@@ -50,6 +54,7 @@ function CreateProductScreen() {
                             navigation.goBack();
                             resetForm();
                         }
+                        setLoading(false)
                     }}
                 >
                     {({ handleChange, handleSubmit, values, errors, touched, setFieldValue }) => (
@@ -88,6 +93,9 @@ function CreateProductScreen() {
                     )}
                 </Formik>
             </View>
+            {loading && (
+                <AppProgress loading={loading} />
+            )}
         </Screen>
     );
 }

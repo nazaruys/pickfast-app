@@ -11,7 +11,7 @@ import AppTextInput from '../components/AppTextInput';
 import AppButton from '../components/AppButton';
 import { fetchPatchUser, fetchUser } from '../functions/apiUsers';
 import { createOkAlert } from '../functions/alerts';
-import baseFetch from '../functions/baseFetch';
+import AppProgress from '../components/AppProgress';
 
 const validationSchema = Yup.object().shape({
     username: Yup.string().required('Username is required'),
@@ -23,6 +23,8 @@ function EditProfileScreen() {
 
     const [userData, setUserData] = useState()
     const [isDataFetched, setIsDataFetched] = useState(false);
+
+    const [loading, setLoading] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -38,6 +40,7 @@ function EditProfileScreen() {
     );
 
     const onSave = async (values) => {
+        setLoading(true)
         response = await fetchPatchUser(values)
         if (response) {
             if (response.status === 200) {
@@ -45,6 +48,7 @@ function EditProfileScreen() {
             } else if (response.status === 400) {
                 createOkAlert('Username is already taken')
             }
+            setLoading(false)
         }
         
     }
@@ -91,6 +95,9 @@ function EditProfileScreen() {
                     </Formik>
                 )}
             </View>
+            {loading && (
+                <AppProgress loading={loading} />
+            )}
         </Screen>
     );
 }

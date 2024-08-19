@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { formatDistanceToNow } from 'date-fns';
-import {MaterialCommunityIcons} from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import AppHeader from '../components/AppHeader';
 import Screen from '../components/Screen';
@@ -28,17 +28,17 @@ function ProductDetailsScreen({ route }) {
     const [loading, setLoading] = useState(true);
 
     const onDeleteProduct = async () => {
-        const data = await baseFetch(`group/groups/groupId/products/${productId}/`, 'DELETE')
-        data && navigation.goBack()
-    }
+        const data = await baseFetch(`group/groups/groupId/products/${productId}/`, 'DELETE');
+        data && navigation.goBack();
+    };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const product = await baseFetch(`group/groups/groupId/products/${productId}/`, 'GET')
+                const product = await baseFetch(`group/groups/groupId/products/${productId}/`, 'GET');
                 product && setProduct(product);
 
-                const stores = await baseFetch(`group/groups/groupId/stores/`, 'GET')
+                const stores = await baseFetch(`group/groups/groupId/stores/`, 'GET');
                 stores && setStores(stores);
                 setLoading(false);
             } catch (error) {
@@ -48,10 +48,13 @@ function ProductDetailsScreen({ route }) {
         fetchData();
     }, [productId]);
 
+    const handleTextChange = (input) => {
+        const filteredInput = input.replace(/[^\p{L}\p{N}\p{P}\p{Zs}]/gu, '');
+        return filteredInput;
+    };
+
     if (loading) {
-        return (
-            <Screen style={{ backgroundColor: colors.background }} />
-        );
+        return <Screen style={{ backgroundColor: colors.background }} />;
     }
 
     return (
@@ -68,60 +71,58 @@ function ProductDetailsScreen({ route }) {
                     const data = await baseFetch(`group/groups/groupId/products/${productId}/`, 'PATCH', {
                         title: values.title,
                         priority: values.priority,
-                        store_id: values.store_id
-                    })
+                        store_id: values.store_id,
+                    });
                     data && navigation.goBack();
                 }}
             >
-                {({ handleChange, handleSubmit, setFieldValue, values, errors, touched }) => (
+                {({ handleSubmit, setFieldValue, values, errors, touched }) => (
                     <>
-                        <AppHeader 
-                            title='Product Details' 
-                            onBackPress={handleSubmit}
-                        />
+                        <AppHeader title="Product Details" onBackPress={handleSubmit} />
                         <View style={styles.container}>
                             <TextInput
                                 value={values.title}
-                                onChangeText={handleChange('title')}
+                                onChangeText={(text) => setFieldValue('title', handleTextChange(text))}
                                 maxLength={40}
                                 style={styles.titleInput}
                                 placeholder="Title"
                             />
                             {touched.title && errors.title && <AppText style={styles.error}>{errors.title}</AppText>}
-                            
+
                             {product.date_buyed && (
                                 <AppText style={styles.boughtDate}>
                                     Bought {formatDistanceToNow(new Date(product.date_buyed), { addSuffix: true })}
                                 </AppText>
                             )}
-                            
+
                             <View style={styles.picker}>
                                 <Picker
                                     selectedValue={values.priority}
                                     onValueChange={(value) => setFieldValue('priority', value)}
                                 >
-                                    <Picker.Item label="Low priority" value='L' />
-                                    <Picker.Item label="Medium priority" value='M' />
-                                    <Picker.Item label="High priority" value='H' />
+                                    <Picker.Item label="Low priority" value="L" />
+                                    <Picker.Item label="Medium priority" value="M" />
+                                    <Picker.Item label="High priority" value="H" />
                                 </Picker>
                             </View>
                             {touched.priority && errors.priority && <AppText style={styles.error}>{errors.priority}</AppText>}
-                            
+
                             <View style={styles.picker}>
                                 <Picker
                                     selectedValue={values.store_id}
                                     onValueChange={(value) => setFieldValue('store_id', value)}
                                 >
                                     <Picker.Item label="Any Store" value={null} />
-                                    {Array.isArray(stores) && stores.map(store => (
-                                        <Picker.Item key={store.id} label={store.name} value={store.id} />
-                                    ))}
+                                    {Array.isArray(stores) &&
+                                        stores.map((store) => (
+                                            <Picker.Item key={store.id} label={store.name} value={store.id} />
+                                        ))}
                                 </Picker>
                             </View>
 
                             <AppText style={styles.added_by}>Added by {product.added_by.name}</AppText>
                             <TouchableOpacity style={styles.deleteButton} onPress={onDeleteProduct}>
-                                <MaterialCommunityIcons name='delete' color={colors.red} size={40} />
+                                <MaterialCommunityIcons name="delete" color={colors.red} size={40} />
                                 <AppText style={styles.deleteText}>Delete</AppText>
                             </TouchableOpacity>
                         </View>
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
     },
     added_by: {
         fontSize: 20,
-        marginBottom: 30
+        marginBottom: 30,
     },
     error: {
         color: 'red',
@@ -157,17 +158,17 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     boughtDate: {
-        marginBottom: '5%'
+        marginBottom: '5%',
     },
     deleteButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderRadius: 12
+        borderRadius: 12,
     },
     deleteText: {
         fontSize: 22,
-        color: colors.red
-    }
+        color: colors.red,
+    },
 });
 
 export default ProductDetailsScreen;

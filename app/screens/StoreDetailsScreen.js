@@ -26,6 +26,11 @@ function StoreDetailsScreen({ route }) {
         }
     }
 
+    const handleTextChange = (input) => {
+        const filteredInput = input.replace(/[^\p{L}\p{N}\p{P}\p{Zs}]/gu, '');
+        return filteredInput;
+    };
+
     return (
         <Screen style={{ backgroundColor: colors.yellow }}>
             <Formik
@@ -39,7 +44,7 @@ function StoreDetailsScreen({ route }) {
                     data && navigation.goBack();
                 }}
             >
-                {({ handleChange, handleSubmit, values, errors, touched }) => (
+                {({ setFieldValue, handleSubmit, values, errors, touched }) => (
                     <>
                         <AppHeader 
                             title='Store Details' 
@@ -49,7 +54,7 @@ function StoreDetailsScreen({ route }) {
                             <TextInput
                                 value={values.name}
                                 maxLength={50}
-                                onChangeText={handleChange('name')}
+                                onChangeText={(text) => setFieldValue('name', handleTextChange(text))}
                                 style={styles.nameInput}
                                 placeholder="Name"
                             />

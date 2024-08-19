@@ -3,25 +3,26 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import {jwtDecode} from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 
-import ProductsScreen from './screens/ProductsScreen';
-import StoresScreen from './screens/StoresScreen';
-import ProfileScreen from './screens/ProfileScreen';
-import colors from './config/colors';
-import ScreenHeader from './components/ScreenHeader';
-import CreateProductScreen from './screens/CreateProductScreen';
-import CreateStoreScreen from './screens/CreateStoreScreen';
-import GroupScreen from './screens/GroupScreen';
-import EditProfileScreen from './screens/EditProfileScreen';
-import WelcomeScreen from './screens/WelcomeScreen';
-import RegisterScreen from './screens/RegisterScreen';
-import LoginScreen from './screens/LoginScreen';
-import EnterGroupScreen from './screens/EnterGroupScreen'
-import { navigationRef } from './navigationService';
-import { getGroupId, getRefreshToken } from './functions/getAsyncStorage';
-import ProductDetailsScreen from './screens/ProductDetailsScreen';
-import StoreDetailsScreen from './screens/StoreDetailsScreen';
+import ProductsScreen from './app/screens/ProductsScreen';
+import StoresScreen from './app/screens/StoresScreen';
+import ProfileScreen from './app/screens/ProfileScreen';
+import colors from './app/config/colors';
+import ScreenHeader from './app/components/ScreenHeader';
+import CreateProductScreen from './app/screens/CreateProductScreen';
+import CreateStoreScreen from './app/screens/CreateStoreScreen';
+import GroupScreen from './app/screens/GroupScreen';
+import EditProfileScreen from './app/screens/EditProfileScreen';
+import WelcomeScreen from './app/screens/WelcomeScreen';
+import RegisterScreen from './app/screens/RegisterScreen';
+import LoginScreen from './app/screens/LoginScreen';
+import EnterGroupScreen from './app/screens/EnterGroupScreen';
+import { navigationRef } from './app/navigationService';
+import { getGroupId, getRefreshToken } from './app/functions/getAsyncStorage';
+import ProductDetailsScreen from './app/screens/ProductDetailsScreen';
+import StoreDetailsScreen from './app/screens/StoreDetailsScreen';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -65,8 +66,8 @@ return (
 
 
 function App() {
-const [initialRoute, setInitialRoute] = useState(null);
-const checkToken = async () => {
+    const [initialRoute, setInitialRoute] = useState(null);
+    const checkToken = async () => {
   	try {
       	const refreshToken = await getRefreshToken()
       	if (refreshToken) {
@@ -86,8 +87,7 @@ const checkToken = async () => {
             setInitialRoute('Welcome');
         }
       } catch (error) {
-      console.error('Error checking token', error);
-      setInitialRoute('Welcome');
+        setInitialRoute('Welcome');
       }
 };
 

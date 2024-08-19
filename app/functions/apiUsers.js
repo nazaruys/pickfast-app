@@ -1,5 +1,4 @@
 import { jwtDecode } from 'jwt-decode';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import fetchRefreshToken from './fetchRefreshToken';
 import { getAccessToken } from './getAsyncStorage';
@@ -48,7 +47,7 @@ export const fetchPatchUserGroupCode = async (groupCode) => {
     }
 };
 
-export const fetchPatchUser = async () => {
+export const fetchPatchUser = async (values) => {
     try {
         const fetchData = async () => {
             const accessToken = await getAccessToken();

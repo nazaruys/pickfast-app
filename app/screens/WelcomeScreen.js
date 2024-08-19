@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { BackHandler, Image, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import AppButton from '../components/AppButton';
@@ -10,6 +10,11 @@ import AppText from '../components/AppText';
 
 function WelcomeScreen() {
     const navigation = useNavigation();
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
+        return () => backHandler.remove()
+      }, [])
     
     return (
         <Screen style={styles.container}>
@@ -33,20 +38,21 @@ const styles = StyleSheet.create({
         padding: '5%'
     },
     button: {
-        marginVertical: 15
+        marginVertical: '3%'
     },
     buttonsContainer: {
         width: '100%',
-        paddingBottom: '40%'
+        paddingBottom: '30%'
     },
     logoContainer: {
         position: 'absolute',
         alignItems: 'center',
-        top: 100
+        top: '8%',
     },
     logoImage: {
-        width: 275,
-        height: 275
+        width: '80%',
+        height: undefined,
+        aspectRatio: 1,
     },
     logoText: {
         fontSize: 50,

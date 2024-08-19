@@ -21,6 +21,7 @@ import {
     createOkAlert
 } from '../functions/alerts';
 import baseFetch from '../functions/baseFetch';
+import AppProgress from '../components/AppProgress';
 
 
 function GroupScreen() {
@@ -30,9 +31,13 @@ function GroupScreen() {
     const [userData, setUserData] = useState();
     const [dropDownOpen, setDropDownOpen] = useState();
 
+    const [loading, setLoading] = useState(false);
+
+
     useFocusEffect(
         useCallback(() => {
           const fetchData = async () => {
+            setLoading(true)
             const newUserData = await fetchUser()
             newUserData && setUserData(newUserData)
 
@@ -50,6 +55,7 @@ function GroupScreen() {
                     setMembersBlocked([...membersBlocked, member]);
                 }
             }
+            setLoading(false)
           };
           fetchData();
         }, [])
@@ -108,6 +114,9 @@ function GroupScreen() {
                     }
                 />
             }
+            {loading && (
+                <AppProgress loading={loading} />
+            )}
         </Screen>
     );
 }

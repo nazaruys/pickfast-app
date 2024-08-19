@@ -83,7 +83,7 @@ export const createGiveAdminAlert = (user, setMembers, setUserData) => {
     const giveAdminAndRefresh = async () => {
         await baseFetch('group/groups/groupId/', 'PATCH', {admin: user.id})
 
-        const data = fetchUser()
+        const data = await fetchUser()
         data && setUserData(data)
 
         const members = await baseFetch('group/groups/groupId/members/', 'GET')

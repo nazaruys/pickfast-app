@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "GroceriesCartFrontend",
-    "slug": "GroceriesCartFrontend",
+    "name": "Groceries Cart",
+    "slug": "groceries-cart",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./app/assets/icon.png",
@@ -9,19 +9,26 @@
     "splash": {
       "image": "./app/assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#defdff"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./app/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.groceriescart.groceriescart"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "28bfd772-e9c6-4d90-a4f0-0a4ad26a339e"
+      }
     }
   }
 }
