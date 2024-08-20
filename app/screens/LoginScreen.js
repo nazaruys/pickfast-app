@@ -11,7 +11,7 @@ import AppHeader from '../components/AppHeader';
 import AppButton from '../components/AppButton';
 import AppTextInput from '../components/AppTextInput';
 import AppText from '../components/AppText';
-// import AppProgress from '../components/AppProgress';
+import AppProgress from '../components/AppProgress';
 import { fetchLoginUser } from '../functions/apiUsers';
 import { createOkAlert } from '../functions/alerts';
 import baseFetch from '../functions/baseFetch';
@@ -28,10 +28,14 @@ function LoginScreen() {
     const handleSubmit = async (values) => {
         setLoading(true);
         try {
+            console.log('Logging in')
             const tokens = await fetchLoginUser(values);
             if (tokens) {
+                console.log('Tokens')
                 await AsyncStorage.setItem('refreshToken', tokens.refresh);
                 await AsyncStorage.setItem('accessToken', tokens.access);
+
+                console.log('Tokens set')
 
                 const user = await baseFetch(`core/users/userId/`, "GET");
                 setLoading(false);
@@ -84,10 +88,9 @@ function LoginScreen() {
                     )}
                 </Formik>
             </View>
-            {/* Disabled for testing */}
-            {/* {loading && (
+            {loading && (
                 <AppProgress loading={loading} />
-            )} */}
+            )}
         </Screen>
     );
 }

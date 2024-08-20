@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, View, Image, Text, BackHandler } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, View, Image, Text, BackHandler, StatusBar } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import colors from '../config/colors';

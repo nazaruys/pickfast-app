@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, StatusBar } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -55,6 +55,7 @@ function EditProfileScreen() {
 
     return (
         <Screen style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor={colors.backgroundSecondary} />
             <AppHeader title={'Edit Profile'} />
             <View style={styles.content}>
                 {isDataFetched && (

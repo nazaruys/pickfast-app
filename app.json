@@ -22,6 +22,11 @@
       },
       "package": "com.groceriescart.groceriescart"
     },
+    "androidNavigationBar": {
+      "visible": true,
+      "barStyle": "dark-content",
+      "backgroundColor": "#000000"
+    },
     "web": {
       "favicon": "./assets/favicon.png"
     },

@@ -1,10 +1,9 @@
 import React from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
-import * as Progress from 'react-native-progress';
+import { BallIndicator } from 'react-native-indicators';
 import colors from '../config/colors';
 
-
-function AppProgress({loading}) {
+function AppProgress({ loading }) {
     return (
         <Modal
             transparent={true}
@@ -13,7 +12,7 @@ function AppProgress({loading}) {
             onRequestClose={() => {}}
         >
             <View style={styles.modalBackground}>
-                <Progress.Circle size={100} indeterminate={true} color={colors.green} />
+                <BallIndicator size={50} color={colors.green} />
             </View>
         </Modal>
     );
@@ -26,6 +25,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-})
+});
 
 export default AppProgress;

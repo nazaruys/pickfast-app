@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -23,6 +23,7 @@ function CreateProductScreen() {
 
     return (
         <Screen style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor={colors.backgroundSecondary} />
             <AppHeader title={'Add a Store'} />
             <View style={styles.content}>
                 <Formik

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, TextInput, View, TouchableOpacity, StatusBar } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -58,7 +58,8 @@ function ProductDetailsScreen({ route }) {
     }
 
     return (
-        <Screen style={{ backgroundColor: product.date_buyed ? colors.lightGreen : colors.yellow }}>
+        <Screen style={{ backgroundColor: colors.backgroundSecondary }}>
+            <StatusBar barStyle="dark-content" backgroundColor={colors.backgroundSecondary} />
             <Formik
                 enableReinitialize
                 initialValues={{

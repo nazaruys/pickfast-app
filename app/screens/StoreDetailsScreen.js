@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, TextInput, View, TouchableOpacity, StatusBar } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import {MaterialCommunityIcons} from '@expo/vector-icons'
@@ -32,7 +32,8 @@ function StoreDetailsScreen({ route }) {
     };
 
     return (
-        <Screen style={{ backgroundColor: colors.yellow }}>
+        <Screen style={{ backgroundColor: colors.backgroundSecondary }}>
+            <StatusBar barStyle="dark-content" backgroundColor={colors.backgroundSecondary} />
             <Formik
                 enableReinitialize
                 initialValues={{

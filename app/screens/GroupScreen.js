@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StatusBar, StyleSheet, View } from 'react-native';
 import Ripple from 'react-native-material-ripple';
 import { useFocusEffect } from '@react-navigation/native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
@@ -63,6 +63,7 @@ function GroupScreen() {
 
     return (
         <Screen style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor={colors.backgroundSecondary} />
             <AppHeader title='Group' />
             {members && userData && 
                 <FlatList

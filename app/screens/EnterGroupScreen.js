@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     },
     logoutContainer: {
         position: 'absolute',
-        top: '7%',
+        top: 0,
         left: '5%',
     },
 });

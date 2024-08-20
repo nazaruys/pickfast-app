@@ -3,7 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import jwtDecode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
+import { StatusBar } from 'react-native';
 
 import ProductsScreen from './app/screens/ProductsScreen';
 import StoresScreen from './app/screens/StoresScreen';
@@ -22,6 +23,7 @@ import { navigationRef } from './app/navigationService';
 import { getGroupId, getRefreshToken } from './app/functions/getAsyncStorage';
 import ProductDetailsScreen from './app/screens/ProductDetailsScreen';
 import StoreDetailsScreen from './app/screens/StoreDetailsScreen';
+import Screen from './app/components/Screen';
 
 
 const Tab = createBottomTabNavigator();
@@ -49,7 +51,7 @@ return (
         tabBarInactiveTintColor: colors.grey,
         tabBarShowLabel: false,
         tabBarStyle: {
-          height: '13%',
+          height: '10%',
           backgroundColor: colors.background,
           borderTopWidth: 0,
           elevation: 0,
@@ -87,6 +89,7 @@ function App() {
             setInitialRoute('Welcome');
         }
       } catch (error) {
+        console.error('Error checking the token: ', error)
         setInitialRoute('Welcome');
       }
 };
@@ -96,68 +99,71 @@ useEffect(() => {
 }, [])
 
 if (initialRoute === null) {
-  return null;
+  return <Screen style={{backgroundColor: colors.background}}></Screen>;
 }
 return (
-  <NavigationContainer ref={navigationRef}>
-    <Stack.Navigator initialRouteName={initialRoute}>
-      <Stack.Screen
-        name="Home"
-        component={BottomTabs}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Welcome"
-        component={WelcomeScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="CreateProduct"
-        component={CreateProductScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ProductDetails"
-        component={ProductDetailsScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="CreateStore"
-        component={CreateStoreScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="StoreDetails"
-        component={StoreDetailsScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Group"
-        component={GroupScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="EditProfile"
-        component={EditProfileScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Register"
-        component={RegisterScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="EnterGroup"
-        component={EnterGroupScreen}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
-  </NavigationContainer>
+  <>
+    <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+    <NavigationContainer ref={navigationRef}>
+      <Stack.Navigator initialRouteName={initialRoute}>
+        <Stack.Screen
+          name="Home"
+          component={BottomTabs}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Welcome"
+          component={WelcomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CreateProduct"
+          component={CreateProductScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ProductDetails"
+          component={ProductDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CreateStore"
+          component={CreateStoreScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="StoreDetails"
+          component={StoreDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Group"
+          component={GroupScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={RegisterScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="EnterGroup"
+          component={EnterGroupScreen}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  </>
 );
 }
 
