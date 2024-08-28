@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, StatusBar } from 'react-native';
+import { StyleSheet, View, Text, StatusBar, BackHandler } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
@@ -30,11 +30,17 @@ function CreateProductScreen() {
                 const data = await baseFetch(`group/groups/groupId/stores/`, 'GET')
                 data && setStores(data);
             } catch (error) {
-                console.log('Error fetching stores: ', error)
+                console.error('Error fetching stores: ', error)
             }
         };
         getStores();
-    }, []);
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            navigation.goBack();
+            return true;
+        });
+
+        return () => backHandler.remove();
+    }, [navigation]);
 
     return (
         <Screen style={styles.container}>

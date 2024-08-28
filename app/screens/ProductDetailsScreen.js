@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TextInput, View, TouchableOpacity, StatusBar } from 'react-native';
+import { StyleSheet, TextInput, View, TouchableOpacity, StatusBar, BackHandler } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -42,11 +42,16 @@ function ProductDetailsScreen({ route }) {
                 stores && setStores(stores);
                 setLoading(false);
             } catch (error) {
-                console.log('Error fetching data: ', error);
+                console.error('Error fetching data: ', error);
             }
         };
         fetchData();
-    }, [productId]);
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            navigation.goBack();
+            return true;
+        })
+        return () => backHandler.remove();
+    }, [productId, navigation]);
 
     const handleTextChange = (input) => {
         const filteredInput = input.replace(/[^\p{L}\p{N}\p{P}\p{Zs}]/gu, '');

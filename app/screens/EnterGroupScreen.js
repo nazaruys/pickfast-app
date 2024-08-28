@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     cell: {
-        width: '12%',
+        width: '14%',
         height: 70,
         lineHeight: 38,
         fontSize: 24,

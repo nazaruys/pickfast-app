@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
         marginVertical: 10
     },
     checkbox: {
-        marginRight: 30
+        marginRight: 10
     },
     title: {
         flex: 1

@@ -28,14 +28,10 @@ function LoginScreen() {
     const handleSubmit = async (values) => {
         setLoading(true);
         try {
-            console.log('Logging in')
             const tokens = await fetchLoginUser(values);
             if (tokens) {
-                console.log('Tokens')
                 await AsyncStorage.setItem('refreshToken', tokens.refresh);
                 await AsyncStorage.setItem('accessToken', tokens.access);
-
-                console.log('Tokens set')
 
                 const user = await baseFetch(`core/users/userId/`, "GET");
                 setLoading(false);

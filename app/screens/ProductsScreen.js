@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, View, Image, Text, BackHandler, StatusBar } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, View, Image, Text, BackHandler, StatusBar, AppState } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import colors from '../config/colors';
@@ -19,14 +19,16 @@ function ProductsScreen() {
   const [productsBought, setProductsBought] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
-    return () => backHandler.remove()
-  }, [])
+  const fetchData = async () => {
+    const data = await baseFetch(`group/groups/groupId/products/`, 'GET');
+    if (data) {
+      setProducts(data);
+    }
+  };
 
   const productBought = async (product) => {
     const currentTime = new Date().toISOString();
-    const data = await baseFetch(`group/groups/groupId/products/${product.id}/`, 'PATCH', {date_buyed: currentTime})
+    const data = await baseFetch(`group/groups/groupId/products/${product.id}/`, 'PATCH', { date_buyed: currentTime });
     if (data) {
       setProductsActive(productsActive.filter(item => item.id !== product.id));
       setProductsBought([...productsBought, product]);
@@ -34,7 +36,7 @@ function ProductsScreen() {
   };
 
   const productUnBought = async (product) => {
-    const data = await baseFetch(`group/groups/groupId/products/${product.id}/`, 'PATCH', {date_buyed: null})
+    const data = await baseFetch(`group/groups/groupId/products/${product.id}/`, 'PATCH', { date_buyed: null });
     if (data) {
       setProductsBought(productsBought.filter(item => item.id !== product.id));
       setProductsActive(sortProductsByPriority([...productsActive, product]));
@@ -46,32 +48,43 @@ function ProductsScreen() {
     const newProductsBought = data.filter(product => product.date_buyed);
 
     setProductsActive(sortProductsByPriority(newProductsActive));
-    setProductsBought(newProductsBought)
-  }
+    setProductsBought(newProductsBought);
+  };
 
   const onRefresh = async () => {
-    const data = await baseFetch(`group/groups/groupId/products/`, 'GET')
-    data && setProducts(data)
+    const data = await baseFetch(`group/groups/groupId/products/`, 'GET');
+    if (data) {
+      setProducts(data);
+    }
   };
 
   useFocusEffect(
     useCallback(() => {
-        const fetchData = async () => {
-            const data = await baseFetch(`group/groups/groupId/products/`, 'GET')
-            data && setProducts(data)
-        };
-        fetchData();
+      fetchData();
+
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
+      return () => backHandler.remove();
     }, [])
   );
+
+  useEffect(() => {
+    const appStateListener = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'active') {
+        fetchData();
+      }
+    });
+
+    return () => appStateListener.remove();
+  }, []);
 
   const renderActiveProducts = () => (
     <View>
       {productsActive.map((item) => (
         <Product
-			key={item.id.toString()}
-			product={item}
-			onCheck={() => productBought(item)}
-			productsActive={productsActive}
+          key={item.id.toString()}
+          product={item}
+          onCheck={() => productBought(item)}
+          productsActive={productsActive}
         />
       ))}
     </View>
@@ -84,7 +97,6 @@ function ProductsScreen() {
           <Product
             key={item.id.toString()}
             product={item}
-            handlePress={() => console.log('Navigating to the details screen.')}
             onCheck={() => productUnBought(item)}
             productsActive={productsActive}
           />

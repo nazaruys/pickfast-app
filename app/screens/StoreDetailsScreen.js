@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, TextInput, View, TouchableOpacity, StatusBar } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, TextInput, View, TouchableOpacity, StatusBar, BackHandler } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import {MaterialCommunityIcons} from '@expo/vector-icons'
@@ -19,6 +19,15 @@ function StoreDetailsScreen({ route }) {
     const navigation = useNavigation();
     const { store } = route.params;
 
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            navigation.goBack();
+            return true;
+        });
+
+        return () => backHandler.remove();
+    }, [navigation]);
+    
     const onDeleteStore = async () => {
         const response = await baseFetch(`group/groups/groupId/stores/${store.id}/`, "DELETE")
         if (response) {

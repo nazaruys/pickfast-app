@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, View, Image } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FlatList, RefreshControl, StyleSheet, View, Image, BackHandler } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import Store from '../components/Store';
@@ -14,6 +14,14 @@ function StoresScreen() {
 
     const [stores, setStores] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            navigation.goBack();
+            return true;
+        });
+        return () => backHandler.remove();
+    }, [navigation]);
 
     useFocusEffect(
         useCallback(() => {

@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { StyleSheet, View } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 
 import ProfileCard from '../components/ProfileCard';
 import Container from '../components/Container';
@@ -13,6 +13,14 @@ function ProfileScreen() {
     
     const [userData, setUserData] = useState();
     
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            navigation.goBack();
+            return true;
+        });
+        return () => backHandler.remove();
+    }, [navigation]);
+
     useFocusEffect(
         useCallback(() => {
             const fetchData = async () => {

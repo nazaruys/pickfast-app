@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { StyleSheet, View, Text, StatusBar } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { StyleSheet, View, Text, StatusBar, BackHandler } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -25,6 +25,15 @@ function EditProfileScreen() {
     const [isDataFetched, setIsDataFetched] = useState(false);
 
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            navigation.goBack();
+            return true;
+        });
+
+        return () => backHandler.remove();
+    }, [navigation]);
 
     useFocusEffect(
         useCallback(() => {

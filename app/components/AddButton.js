@@ -1,15 +1,13 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons'
 
 import colors from '../config/colors';
 
 function AddButton({style, onPress}) {
     return (
-        <TouchableOpacity activeOpacity={0.4} onPress={onPress}>
-            <View style={[styles.button, style]}>
-                <MaterialCommunityIcons name='plus' size={50} color='#fff' />
-            </View>
+        <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
+            <MaterialCommunityIcons name='plus' size={50} color='#fff' />
         </TouchableOpacity>
     );
 }

@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from 'react';
-import { FlatList, StatusBar, StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { BackHandler, FlatList, StatusBar, StyleSheet, View } from 'react-native';
 import Ripple from 'react-native-material-ripple';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 
 import AppHeader from '../components/AppHeader';
@@ -25,6 +25,7 @@ import AppProgress from '../components/AppProgress';
 
 
 function GroupScreen() {
+    const navigation = useNavigation()
     const [isPrivate, setIsPrivate] = useState(false)
     const [members, setMembers] = useState([]);
     const [membersBlocked, setMembersBlocked] = useState([]);
@@ -33,6 +34,14 @@ function GroupScreen() {
 
     const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            navigation.goBack();
+            return true;
+        });
+
+        return () => backHandler.remove();
+    }, [navigation]);
 
     useFocusEffect(
         useCallback(() => {

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, StatusBar } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, StatusBar, BackHandler } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -21,6 +21,14 @@ function CreateProductScreen() {
 
     const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            navigation.goBack();
+            return true;
+        });
+        return () => backHandler.remove();
+    }, [navigation]);
+    
     return (
         <Screen style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor={colors.backgroundSecondary} />

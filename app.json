@@ -23,9 +23,8 @@
       "package": "com.groceriescart.groceriescart"
     },
     "androidNavigationBar": {
-      "visible": true,
       "barStyle": "dark-content",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#defdff"
     },
     "web": {
       "favicon": "./assets/favicon.png"
