@@ -35,3 +35,6 @@ eas.json
 
 # typescript
 *.tsbuildinfo
+
+# readme files
+demo.gif
