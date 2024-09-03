@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Groceries Cart",
-    "slug": "groceries-cart",
+    "name": "PickFast",
+    "slug": "pickfast",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./app/assets/icon.png",
@@ -20,7 +20,7 @@
         "foregroundImage": "./app/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.groceriescart.groceriescart"
+      "package": "com.pickfast.pickfast"
     },
     "androidNavigationBar": {
       "barStyle": "dark-content",
