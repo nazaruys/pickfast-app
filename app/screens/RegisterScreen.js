@@ -122,7 +122,6 @@ function RegisterScreen() {
                                 secureTextEntry
                             />
                             {touched.confirmPassword && errors.confirmPassword && <AppText style={styles.errorText}>{errors.confirmPassword}</AppText>}
-                            <AppText style={styles.emailInfo}>*We'll use the email provided above to send you the latest updates of our app.</AppText>
                             <AppButton title="Register" style={styles.button} onPress={handleSubmit} />
                         </>
                     )}

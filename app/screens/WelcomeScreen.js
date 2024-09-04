@@ -20,7 +20,7 @@ function WelcomeScreen() {
         <Screen style={styles.container}>
             <View style={styles.logoContainer}>
                 <Image style={styles.logoImage} source={require('../assets/Groceries-Cart.png')}/>
-                <AppText style={styles.logoText}>Welcome!</AppText>
+                <AppText style={styles.logoText}>Welcome to PickFast!</AppText>
             </View>
             <View style={styles.buttonsContainer}>
                 <AppButton title='Login' style={styles.button} color={colors.green} textColor={colors.black} onPress={() => navigation.navigate('Login')} />
@@ -55,7 +55,8 @@ const styles = StyleSheet.create({
         aspectRatio: 1,
     },
     logoText: {
-        fontSize: 50,
+        textAlign: 'center',
+        fontSize: 40,
         fontWeight: '700'
     }
 })
