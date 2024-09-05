@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, StatusBar, BackHandler } from 'react-native';
+import { StyleSheet, View, Text, StatusBar, BackHandler, Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
@@ -21,16 +21,15 @@ function CreateProductScreen() {
     const navigation = useNavigation();
 
     const [stores, setStores] = useState([]);
-
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const getStores = async () => {
             try {
-                const data = await baseFetch(`group/groups/groupId/stores/`, 'GET')
+                const data = await baseFetch(`group/groups/groupId/stores/`, 'GET');
                 data && setStores(data);
             } catch (error) {
-                console.error('Error fetching stores: ', error)
+                console.error('Error fetching stores: ', error);
             }
         };
         getStores();
@@ -45,64 +44,65 @@ function CreateProductScreen() {
     return (
         <Screen style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor={colors.backgroundSecondary} />
-            <AppHeader title='Add a Product' />
+            <AppHeader title="Add a Product" />
             <View style={styles.content}>
                 <Formik
                     initialValues={{ title: '', priority: 'M', store_id: null }}
                     validationSchema={validationSchema}
                     onSubmit={async (values, { resetForm }) => {
-                        setLoading(true)
+                        setLoading(true);
                         const data = await baseFetch('group/groups/groupId/products/', 'POST', {
                             title: values.title,
                             priority: values.priority,
-                            store_id: values.store_id
-                        })
+                            store_id: values.store_id,
+                        });
                         if (data) {
                             navigation.goBack();
                             resetForm();
                         }
-                        setLoading(false)
+                        setLoading(false);
                     }}
                 >
                     {({ handleChange, handleSubmit, values, errors, touched, setFieldValue }) => (
                         <>
                             <AppTextInput
-                                placeholder='Title'
+                                placeholder="Title"
                                 style={styles.textInput}
                                 maxLength={40}
                                 value={values.title}
                                 onChangeText={handleChange('title')}
                             />
                             {touched.title && errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
-                            <View style={styles.picker}>
+                            <View style={styles.pickerContainer}>
                                 <Picker
-                                    selectedValue={values.priority}
+                                    selectedValue={values.priority || "M"}
                                     onValueChange={(value) => setFieldValue('priority', value)}
+                                    style={styles.picker}
                                 >
-                                    <Picker.Item label="Medium priority" value='M' />
-                                    <Picker.Item label="Low priority" value='L' />
-                                    <Picker.Item label="High priority" value='H' />
+                                    <Picker.Item label="Low priority" value="L" />
+                                    <Picker.Item label="Medium priority" value="M" />
+                                    <Picker.Item label="High priority" value="H" />
                                 </Picker>
                             </View>
-                            <View style={styles.picker}>
+                            <View style={styles.pickerContainer}>
                                 <Picker
                                     selectedValue={values.store_id}
                                     onValueChange={(value) => setFieldValue('store_id', value)}
+                                    style={styles.picker}
                                 >
                                     <Picker.Item label="Any Store" value={null} />
-                                    {Array.isArray(stores) && stores.map(store => (
-                                        <Picker.Item key={store.id} label={store.name} value={store.id} />
-                                    ))}
+                                    {Array.isArray(stores) &&
+                                        stores.map((store) => (
+                                            <Picker.Item key={store.id} label={store.name} value={store.id} />
+                                        ))}
                                 </Picker>
                             </View>
-                            <AppButton title='Add' onPress={handleSubmit} style={styles.submitButton} />
+                            <AppButton title="Add" onPress={handleSubmit} style={styles.submitButton} />
                         </>
                     )}
                 </Formik>
             </View>
-            {loading && (
-                <AppProgress loading={loading} />
-            )}
+            {loading && <AppProgress loading={loading} />}
         </Screen>
     );
 }
@@ -113,25 +113,29 @@ const styles = StyleSheet.create({
     },
     content: {
         paddingHorizontal: '5%',
-        paddingTop: 25
+        paddingTop: 25,
     },
     textInput: {
-        marginVertical: 12
+        marginVertical: 12,
+    },
+    pickerContainer: {
+        backgroundColor: Platform.OS === 'ios' ? 'rgba(0, 0, 0, 0)' : colors.white,
+        height: Platform.OS === 'ios' ? 200 : 60,
+        borderRadius: 12,
+        marginVertical: Platform.OS === 'ios' ? 0 : 12,
+        justifyContent: 'center',
     },
     picker: {
-        backgroundColor: colors.white,
-        height: 60,
-        borderRadius: 12,
-        marginVertical: 12,
-        justifyContent: 'center'
+        height: Platform.OS === 'ios' ? 200 : 60,
+        color: colors.dark,
     },
     submitButton: {
-        marginVertical: 12
+        marginVertical: 12,
     },
     errorText: {
         color: 'red',
-        marginBottom: 10
-    }
+        marginBottom: 10,
+    },
 });
 
 export default CreateProductScreen;

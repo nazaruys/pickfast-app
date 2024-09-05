@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
         borderColor: colors.grey,
         borderWidth: 0.4,
         borderRadius: 1,
-        elevation: 3,
     },
     rippleContainer: {
         marginVertical: 10

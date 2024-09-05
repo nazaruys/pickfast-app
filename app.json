@@ -31,8 +31,15 @@
     },
     "extra": {
       "eas": {
-        "projectId": "28bfd772-e9c6-4d90-a4f0-0a4ad26a339e"
+        "projectId": "eebc90c7-926b-4eed-9bab-e07c040427b2"
       }
+    },
+    "owner": "nazaruy",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/eebc90c7-926b-4eed-9bab-e07c040427b2"
     }
   }
 }

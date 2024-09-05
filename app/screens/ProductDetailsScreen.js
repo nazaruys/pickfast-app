@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TextInput, View, TouchableOpacity, StatusBar, BackHandler } from 'react-native';
+import { StyleSheet, TextInput, View, TouchableOpacity, StatusBar, BackHandler, Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -49,7 +49,7 @@ function ProductDetailsScreen({ route }) {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             navigation.goBack();
             return true;
-        })
+        });
         return () => backHandler.remove();
     }, [productId, navigation]);
 
@@ -101,10 +101,11 @@ function ProductDetailsScreen({ route }) {
                                 </AppText>
                             )}
 
-                            <View style={styles.picker}>
+                            <View style={styles.pickerContainer}>
                                 <Picker
                                     selectedValue={values.priority}
                                     onValueChange={(value) => setFieldValue('priority', value)}
+                                    style={styles.picker}
                                 >
                                     <Picker.Item label="Low priority" value="L" />
                                     <Picker.Item label="Medium priority" value="M" />
@@ -113,10 +114,11 @@ function ProductDetailsScreen({ route }) {
                             </View>
                             {touched.priority && errors.priority && <AppText style={styles.error}>{errors.priority}</AppText>}
 
-                            <View style={styles.picker}>
+                            <View style={styles.pickerContainer}>
                                 <Picker
                                     selectedValue={values.store_id}
                                     onValueChange={(value) => setFieldValue('store_id', value)}
+                                    style={styles.picker}
                                 >
                                     <Picker.Item label="Any Store" value={null} />
                                     {Array.isArray(stores) &&
@@ -147,12 +149,16 @@ const styles = StyleSheet.create({
         fontSize: 28,
         marginVertical: '5%',
     },
-    picker: {
-        backgroundColor: colors.white,
-        height: 60,
+    pickerContainer: {
+        backgroundColor: Platform.OS === 'ios' ? 'rgba(0, 0, 0, 0)' : colors.white,
+        height: Platform.OS === 'ios' ? 200 : 60,
         borderRadius: 12,
         marginBottom: '5%',
         justifyContent: 'center',
+    },
+    picker: {
+        height: Platform.OS === 'ios' ? 200 : 60,
+        color: colors.dark,
     },
     added_by: {
         fontSize: 20,
