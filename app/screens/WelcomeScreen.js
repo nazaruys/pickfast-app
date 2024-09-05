@@ -19,7 +19,7 @@ function WelcomeScreen() {
     return (
         <Screen style={styles.container}>
             <View style={styles.logoContainer}>
-                <Image style={styles.logoImage} source={require('../assets/Groceries-Cart.png')}/>
+                <Image style={styles.logoImage} source={require('../assets/PickFast.png')}/>
                 <AppText style={styles.logoText}>Welcome to PickFast!</AppText>
             </View>
             <View style={styles.buttonsContainer}>

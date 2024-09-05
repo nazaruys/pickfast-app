@@ -84,7 +84,7 @@ function EnterGroupScreen() {
                 <MaterialIcons color={colors.dark} name="logout" size={35} style={styles.icon} />
             </TouchableOpacity>
             <View style={styles.codeContainer}>
-                <Image style={styles.logoImage} source={require('../assets/Groceries-Cart.png')} />
+                <Image style={styles.logoImage} source={require('../assets/PickFast.png')} />
                 <AppText style={styles.title}>Enter the code of your group</AppText>
                 <CodeField
                     ref={ref}
