@@ -23,7 +23,13 @@ export default baseFetch = async (passedPath, method, body = {}) => {
             if (method !== 'GET') {
                 options.body = JSON.stringify(body);
             }
-            API_URL = process.env.EXPO_PUBLIC_API_URL
+            const DEBUG = process.env.EXPO_PUBLIC_DEBUG === 'true'
+            let API_URL
+            if (DEBUG) {
+                API_URL = process.env.EXPO_PUBLIC_DEV_API_URL
+            } else {
+                API_URL = process.env.EXPO_PUBLIC_PROD_API_URL
+            }
             return await fetch(API_URL + path, options);
         };
         for (let i = 0; i < 2; i++) {
@@ -42,6 +48,7 @@ export default baseFetch = async (passedPath, method, body = {}) => {
                     return null
                 }
             } else {
+                console.error('Response status: ', response.status)
                 logOut()
                 return null
             }

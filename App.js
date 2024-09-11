@@ -24,6 +24,9 @@ import { getGroupId, getRefreshToken } from './app/functions/getAsyncStorage';
 import ProductDetailsScreen from './app/screens/ProductDetailsScreen';
 import StoreDetailsScreen from './app/screens/StoreDetailsScreen';
 import Screen from './app/components/Screen';
+import VerifyEmailScreen from './app/screens/VerifyEmailScreen';
+import EmailVerifiedScreen from './app/screens/EmailVerifiedScreen';
+import FeedbackScreen from './app/screens/FeedbackScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -159,6 +162,21 @@ return (
         <Stack.Screen
           name="EnterGroup"
           component={EnterGroupScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="VerifyEmail"
+          component={VerifyEmailScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="EmailVerified"
+          component={EmailVerifiedScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Feedback"
+          component={FeedbackScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

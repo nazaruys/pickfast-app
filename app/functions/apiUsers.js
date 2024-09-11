@@ -3,7 +3,13 @@ import { jwtDecode } from 'jwt-decode';
 import fetchRefreshToken from './fetchRefreshToken';
 import { getAccessToken } from './getAsyncStorage';
 
-API_URL = process.env.EXPO_PUBLIC_API_URL
+const DEBUG = process.env.EXPO_PUBLIC_DEBUG === 'true'
+let API_URL
+if (DEBUG) {
+    API_URL = process.env.EXPO_PUBLIC_DEV_API_URL
+} else {
+    API_URL = process.env.EXPO_PUBLIC_PROD_API_URL
+}
 
 export const fetchUser = async () => {
     const data = baseFetch('core/users/userId/', 'GET')
@@ -86,8 +92,6 @@ export const fetchPatchUser = async (values) => {
 };
 
 
-// 2 individuals
-
 export const fetchLoginUser = async (values) => {
     try {
         const fetchData = async () => {
@@ -114,6 +118,99 @@ export const fetchLoginUser = async (values) => {
         return null
     }
 };
+export const fetchVerifyEmail = async (email, code) => {
+    try {
+        const accessToken = await getAccessToken();
+        const fetchData = async () => {
+            return await fetch(`${API_URL}core/verify-email/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    verification_code: code
+                })
+        })}
+        const response = await fetchData()
+        if (response.status === 200) {
+            const data = await response.json();
+            return data
+        } else {
+            return null
+        }
+    } catch (error) {
+        console.error("Fetch error:", error);
+        logOut()
+        return null
+    }
+};
+
+export const fetchResendVerificationEmail = async (email) => {
+    try {
+        const accessToken = await getAccessToken();
+        const fetchData = async () => {
+            return await fetch(`${API_URL}core/resend-verification-email/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email
+                })
+        })}
+        const response = await fetchData()
+        if (response.status === 200) {
+            return null
+        } else if (response.status === 429) {
+            return await response.json();
+        } else if (response.status === 400) {
+            return await response.json();
+        } else {
+            return {'error': 'Something went wrong.'}
+        }
+    } catch (error) {
+        console.error("Fetch error:", error);
+        logOut()
+        return null
+    }
+};
+export const fetchSendFeedback = async (email, message) => {
+    try {
+        const accessToken = await getAccessToken();
+        const fetchData = async () => {
+            return await fetch(`${API_URL}core/feedback/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    message: message
+                })
+        })}
+        const response = await fetchData()
+        if (response.status === 200) {
+            return null
+        } else if (response.status === 429) {
+            return await response.json();
+        } else if (response.status === 400) {
+            return await response.json();
+        } else {
+            console.error("Fetch error:", response.status);
+            return {'error': 'Something went wrong.'}
+        }
+    } catch (error) {
+        console.error("Fetch error:", error);
+        logOut()
+        return null
+    }
+};
+
+
 
 export const fetchPostUser = async (values) => {
     try {

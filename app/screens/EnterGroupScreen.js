@@ -70,7 +70,7 @@ function EnterGroupScreen() {
         const data = await baseFetch('group/groups/', 'POST', {});
         setLoading(false);
 
-        if (data) {
+        if (data.code) {
             await AsyncStorage.setItem('groupId', data.code);
             navigation.navigate('Home');
         } else {
