@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
@@ -36,28 +36,30 @@ function FeedbackScreen({ route }) {
   	return (
 		<Screen style={styles.screen}>
 			<AppHeader title='Feedback' />
-			<Formik
-				initialValues={{ feedback: '' }}
-				onSubmit={(values) => handleFeedbackSubmit(values)}
-				validationSchema={validationSchema}
-			>
-			{({ handleChange, handleSubmit, errors, touched, setFieldTouched, values }) => (
-				<>
-					<AppTextInput
-						placeholder="Your feedback"
-						style={styles.textInput}
-						value={values.feedback}
-						onChangeText={handleChange('feedback')}
-						onBlur={() => setFieldTouched('feedback')}
-						multiline={true}
-					/>
-					{touched.feedback && errors.feedback && (
-						<AppText style={styles.errorText}>{errors.feedback}</AppText>
+			<View style={styles.content}>
+				<Formik
+					initialValues={{ feedback: '' }}
+					onSubmit={(values) => handleFeedbackSubmit(values)}
+					validationSchema={validationSchema}
+				>
+					{({ handleChange, handleSubmit, errors, touched, setFieldTouched, values }) => (
+						<>
+							<AppTextInput
+								placeholder="Your feedback"
+								style={styles.textInput}
+								value={values.feedback}
+								onChangeText={handleChange('feedback')}
+								onBlur={() => setFieldTouched('feedback')}
+								multiline={true}
+							/>
+							{touched.feedback && errors.feedback && (
+								<AppText style={styles.errorText}>{errors.feedback}</AppText>
+							)}
+							<AppButton title='Submit' onPress={handleSubmit} />
+						</>
 					)}
-					<AppButton title='Submit' onPress={handleSubmit} />
-				</>
-			)}
-		</Formik>
+				</Formik>
+			</View>
 		</Screen>
   	);
 }
@@ -65,7 +67,9 @@ function FeedbackScreen({ route }) {
 const styles = StyleSheet.create({
   screen: {
     backgroundColor: colors.background,
-    paddingHorizontal: '5%',
+  },
+  content: {
+	paddingHorizontal: '5%'
   },
   textInput: {
     marginVertical: 18,

@@ -72,7 +72,7 @@ function RegisterScreen() {
     return (
         <Screen style={styles.container}>
             <AppHeader title="Register" />
-            <ScrollView style={styles.form}>
+            <ScrollView contentContainerStyle={styles.form}>
                 <Formik
                     initialValues={{ username: '', email: '', name: '', password: '', confirmPassword: '' }}
                     validationSchema={validationSchema}

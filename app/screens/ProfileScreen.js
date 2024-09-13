@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { BackHandler, Image, StyleSheet, View } from 'react-native';
+import { BackHandler, Image, ScrollView, StyleSheet, View } from 'react-native';
 
 import ProfileCard from '../components/ProfileCard';
-import Container from '../components/Container';
 import AppText from '../components/AppText';
 import { createLogoutAlert } from '../functions/alerts';
 import { fetchUser } from '../functions/apiUsers';
@@ -34,7 +33,7 @@ function ProfileScreen() {
     );
 
     return (
-        <Container>
+        <ScrollView contentContainerStyle={styles.container}>
             {userData &&
                 <>
                     <View style={styles.userContainer}>
@@ -57,11 +56,16 @@ function ProfileScreen() {
                 </>
             }
             <ProfileCard icon='logout' title='Log out' style={styles.logoutCard} onPress={createLogoutAlert} />
-        </Container>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
+    container: {
+        backgroundColor: colors.background,
+        flex: 1,
+        paddingHorizontal: '5%'
+    },
     userContainer: {
         padding: 10,
         marginBottom: 15
