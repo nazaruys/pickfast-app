@@ -51,12 +51,12 @@ function VerifyEmailScreen({ route }) {
     }
 
     const resendEmail = async () => {
-        setResendClicked(true)
         const data = await fetchResendVerificationEmail(email)
         if (data && 'error' in data) {
             createOkAlert(data['error'])
             return
         }
+        setResendClicked(true)
     }
 
     return (

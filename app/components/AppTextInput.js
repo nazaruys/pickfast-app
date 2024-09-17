@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 
 import colors from '../config/colors';
 import defaultStyles from '../config/styles'
 
-function AppTextInput({ placeholder, style, onChangeText, value, ...otherProps }) {
+const AppTextInput = forwardRef(({ placeholder, style, onChangeText, value, ...otherProps }, ref) => {
     const [text, setText] = useState(value || '');
 
     const handleTextChange = (input) => {
@@ -17,7 +17,8 @@ function AppTextInput({ placeholder, style, onChangeText, value, ...otherProps }
 
     return (
         <View style={[styles.container, style]}>
-            <TextInput 
+            <TextInput
+                ref={ref}
                 placeholder={placeholder} 
                 style={defaultStyles.text}
                 value={text}
@@ -26,7 +27,7 @@ function AppTextInput({ placeholder, style, onChangeText, value, ...otherProps }
             />
         </View>
     );
-}
+});
 
 const styles = StyleSheet.create({
     container: {

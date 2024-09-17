@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Text, StatusBar, BackHandler, Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
@@ -19,11 +19,13 @@ const validationSchema = Yup.object().shape({
 
 function CreateProductScreen() {
     const navigation = useNavigation();
+    const inputRef = useRef(null);
 
     const [stores, setStores] = useState([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        // Fetch stores when the component mounts
         const getStores = async () => {
             try {
                 const data = await baseFetch(`group/groups/groupId/stores/`, 'GET');
@@ -33,12 +35,24 @@ function CreateProductScreen() {
             }
         };
         getStores();
+
+        // Handle hardware back button press
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             navigation.goBack();
             return true;
         });
 
-        return () => backHandler.remove();
+        // Focus the TextInput after the component mounts
+        const focusTimeout = setTimeout(() => {
+            if (inputRef.current) {
+                inputRef.current.focus(); // Focus on the TextInput
+            }
+        }, 100); // Delay to ensure component is rendered before focusing
+
+        return () => {
+            backHandler.remove(); // Clean up back handler
+            clearTimeout(focusTimeout); // Clear timeout
+        };
     }, [navigation]);
 
     return (
@@ -67,6 +81,7 @@ function CreateProductScreen() {
                         <>
                             <AppTextInput
                                 placeholder="Title"
+                                ref={inputRef} // Reference to the input field
                                 style={styles.textInput}
                                 maxLength={40}
                                 value={values.title}

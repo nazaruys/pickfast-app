@@ -63,24 +63,25 @@ export const fetchPatchUser = async (values) => {
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({username: values.username, name: values.name})
+                body: JSON.stringify({username: values.username, name: values.name, email: values.email})
             };
             const userId = jwtDecode(accessToken).user_id
             return await fetch(API_URL + `core/users/${userId}/`, options);
         };
         for (let i = 0; i < 2; i++) {
             const response = await fetchData()
+            const data = await response.json()
             if (response.status === 200 || response.status === 400) {
-                return response;
+                return [response, data];
             } else if (response.status === 401) {
                 const access = await fetchRefreshToken()
                 if (!access || i === 1) {
                     logOut()
-                    return null
+                    return [response, null]
                 }
             } else {
                 logOut()
-                return null
+                return [response, null]
             }
         }
           
