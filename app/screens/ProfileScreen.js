@@ -52,7 +52,7 @@ function ProfileScreen() {
                             </View>
                         </View>
                     }
-                    <ProfileCard icon='feedback' title='Feedback' onPress={() => navigation.navigate('Feedback', {email: userData.email})} />
+                    <ProfileCard icon='feedback' title='Support' onPress={() => navigation.navigate('Feedback', {email: userData.email})} />
                 </>
             }
             <ProfileCard icon='logout' title='Log out' style={styles.logoutCard} onPress={createLogoutAlert} />

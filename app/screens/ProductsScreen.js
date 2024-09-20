@@ -14,7 +14,7 @@ import baseFetch from '../functions/baseFetch';
 function ProductsScreen() {
   const navigation = useNavigation();
 
-  const [dropDownOpen, setDropDownOpen] = useState(false);
+  const [dropDownOpen, setDropDownOpen] = useState(true);
   const [productsActive, setProductsActive] = useState([]);
   const [productsBought, setProductsBought] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -61,8 +61,8 @@ function ProductsScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchData();
-
       const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
+
       return () => backHandler.remove();
     }, [])
   );

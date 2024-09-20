@@ -29,13 +29,13 @@ function FeedbackScreen({ route }) {
 			createOkAlert(data.error)
 		} else {
 			navigationRef.navigate('Home')
-			createOkAlert('Thank you for your feedback!')
+			createOkAlert("Thank you, we'll respond to you by email as soon as possible!")
 		}
 	}
 
   	return (
 		<Screen style={styles.screen}>
-			<AppHeader title='Feedback' />
+			<AppHeader title='Contact Support' />
 			<View style={styles.content}>
 				<Formik
 					initialValues={{ feedback: '' }}
@@ -45,17 +45,17 @@ function FeedbackScreen({ route }) {
 					{({ handleChange, handleSubmit, errors, touched, setFieldTouched, values }) => (
 						<>
 							<AppTextInput
-								placeholder="Your feedback"
+								placeholder="Your message"
 								style={styles.textInput}
 								value={values.feedback}
-								onChangeText={handleChange('feedback')}
+								onChangeText={() => handleChange('feedback')}
 								onBlur={() => setFieldTouched('feedback')}
 								multiline={true}
 							/>
 							{touched.feedback && errors.feedback && (
 								<AppText style={styles.errorText}>{errors.feedback}</AppText>
 							)}
-							<AppButton title='Submit' onPress={handleSubmit} />
+							<AppButton title='Send' onPress={handleSubmit} />
 						</>
 					)}
 				</Formik>
