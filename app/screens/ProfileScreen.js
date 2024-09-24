@@ -42,6 +42,7 @@ function ProfileScreen() {
                     </View> 
                     <ProfileCard icon='group' title='Group' subTitle={userData.group_id} onPress={() => navigation.navigate('Group')} />
                     <ProfileCard icon='account-circle' title='Edit profile' onPress={() => navigation.navigate('EditProfile')} />
+                    <ProfileCard icon='feedback' title='Support' onPress={() => navigation.navigate('Feedback', {email: userData.email})} />
                     
                     {!userData.verified && 
                         <View style={styles.verifyEmailCard}>
@@ -52,7 +53,6 @@ function ProfileScreen() {
                             </View>
                         </View>
                     }
-                    <ProfileCard icon='feedback' title='Support' onPress={() => navigation.navigate('Feedback', {email: userData.email})} />
                 </>
             }
             <ProfileCard icon='logout' title='Log out' style={styles.logoutCard} onPress={createLogoutAlert} />
@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     verifyEmailCard: {
+        marginVertical: 10,
         width: '100%',
         height: 130,
         padding: '3%',
