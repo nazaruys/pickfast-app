@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { Linking, ScrollView, StyleSheet } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -40,6 +40,10 @@ const validationSchema = Yup.object().shape({
 function RegisterScreen() {
     const navigation = useNavigation();
     const [loading, setLoading] = useState(false);
+
+    const openLink = (url) => {
+        Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
+      };
 
     const handleSubmit = async (values) => {
         setLoading(true);
@@ -122,6 +126,16 @@ function RegisterScreen() {
                                 secureTextEntry
                             />
                             {touched.confirmPassword && errors.confirmPassword && <AppText style={styles.errorText}>{errors.confirmPassword}</AppText>}
+                            <AppText style={styles.text}>
+                                By clicking 'Register,' you agree to our{' '}
+                                <AppText style={styles.link} onPress={() => openLink('https://nazaruys.github.io/pickfast-app/terms_and_conditions.html')}>
+                                Terms & Conditions
+                                </AppText>
+                                {' '}and{' '}
+                                <AppText style={styles.link} onPress={() => openLink('https://nazaruys.github.io/pickfast-app/privacy-policy.html')}>
+                                Privacy Policy
+                                </AppText>.
+                            </AppText>
                             <AppButton title="Register" style={styles.button} onPress={handleSubmit} />
                         </>
                     )}
@@ -154,6 +168,15 @@ const styles = StyleSheet.create({
     emailInfo: {
         fontSize: 16,
         color: colors.darkGrey,
+    },
+    text: {
+        fontSize: 12,
+        color: 'gray',
+      },
+    link: {
+        fontSize: 12,
+        color: 'blue',
+        textDecorationLine: 'underline',
     },
 });
 
