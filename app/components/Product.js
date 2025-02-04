@@ -28,17 +28,16 @@ function Product({ product, onCheck, productsActive }) {
         <TouchableOpacity 
             style={styles.rippleContainer} 
             onPress={onCheck}
-            onLongPress={() => navigation.navigate('ProductDetails', { productId: product.id })}
         >
             <View style={[
                 styles.container,
                 { opacity: isBought ? 0.5 : 1, borderWidth: 0.4, }
             ]}>
                 <MaterialCommunityIcons 
-                    name={isBought ? "exclamation" : "exclamation"} 
+                    name={"exclamation"} 
                     size={26} 
                     color={markColor}
-                    style={[styles.checkcircle]} 
+                    style={[styles.priorityIcon]} 
                 />
                 <AppText
                     style={styles.title}
@@ -51,6 +50,16 @@ function Product({ product, onCheck, productsActive }) {
                                 >
                     {store_name}
                 </AppText>}
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('ProductDetails', { productId: product.id })}
+                >
+                    <MaterialCommunityIcons 
+                        name="pencil" 
+                        size={20} 
+                        color={colors.darkGrey} 
+                        style={{ marginLeft: 15, padding: 3 }} 
+                    />
+                </TouchableOpacity>
             </View> 
         </TouchableOpacity>
     );
@@ -71,7 +80,7 @@ const styles = StyleSheet.create({
     rippleContainer: {
         marginVertical: 10
     },
-    checkcircle: {
+    priorityIcon: {
         marginRight: 3
     },
     title: {
@@ -80,7 +89,6 @@ const styles = StyleSheet.create({
     subTitle: {
         color: colors.tiffany,
         fontSize: 16,
-        marginLeft: 25,
     }
 })
 

@@ -50,7 +50,7 @@ function CreateProductScreen() {
                             <AppTextInput
                                 placeholder='Name'
                                 style={styles.textInput}
-                                maxLength={50}
+                                maxLength={18}
                                 value={values.name}
                                 onChangeText={handleChange('name')}
                             />
